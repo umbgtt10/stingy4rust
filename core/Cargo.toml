@@ -1,0 +1,11 @@
+[package]
+name = "stingy4rust-core"
+description = "The measuring behind cargo-stingy4rust: a Rust codebase's heap, peak heap, storage and wire bytes under fixed load profiles. In development: this release reserves the name."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "../README.md"
+keywords = ["allocation", "memory", "budget", "profiling", "ci"]
+categories = ["development-tools", "memory-management"]

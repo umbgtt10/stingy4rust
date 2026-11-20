@@ -1,0 +1,11 @@
+[workspace]
+resolver = "2"
+members = ["core", "cli"]
+
+# One version for every member: the two published crates release together.
+[workspace.package]
+version = "0.0.1"
+edition = "2024"
+rust-version = "1.91"
+license = "MIT"
+repository = "https://github.com/umbgtt10/stingy4rust"

@@ -1,0 +1,6 @@
+# The compiler this repository builds with, pinned as the rest of the *4rust
+# family pins it, so neither a machine's default nor CI's `stable` can change
+# it unannounced. Bump it in its own commit.
+[toolchain]
+channel = "1.99.1"
+components = ["rustfmt", "clippy", "llvm-tools"]

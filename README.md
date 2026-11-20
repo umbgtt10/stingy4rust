@@ -27,6 +27,12 @@ The load profiles are the codebase's own: deterministic scenarios from a fixed
 seed, so every figure is reproducible. It is built first for a distributed
 protocol that runs on hosts and on microcontrollers, where every byte counts.
 
+## Design
+
+[`docs/DESIGN.md`](docs/DESIGN.md): what it measures and how, load profiles,
+budgets and the gate, determinism, microcontrollers, the crates, the slices
+it is built in, and the questions still open.
+
 ## Licence
 
 MIT -- see [`LICENSE`](LICENSE).

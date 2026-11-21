@@ -339,14 +339,18 @@ stingy4rust-host = "0.1"
 and writes its `main`:
 
 ```rust
-use stingy4rust::profile::Profile;
-use stingy4rust::run::Run;
+use stingy4rust::run::profile::Profile;
+use stingy4rust::run::run::Run;
+use stingy4rust_host::file_report_sink::FileReportSink;
 use stingy4rust_host::host_stingy::HostStingy;
+use stingy4rust_host::process_environment::ProcessEnvironment;
 use stingy4rust_host::profile_main::ProfileMain;
+use stingy4rust_host::stingy::Stingy;
+use std::alloc::System;
 use std::process::ExitCode;
 
 #[global_allocator]
-static STINGY: HostStingy = HostStingy::new();
+static STINGY: HostStingy = Stingy::new(System);
 
 static PROFILES: [Profile; 2] = [
     Profile { name: "five-nodes-idle", seed: 2026, body: idle },
@@ -354,7 +358,7 @@ static PROFILES: [Profile; 2] = [
 ];
 
 fn main() -> ExitCode {
-    ProfileMain::new(&STINGY, &PROFILES).run()
+    ProfileMain::new(&STINGY, &PROFILES, &ProcessEnvironment, &FileReportSink).run()
 }
 ```
 
@@ -363,15 +367,19 @@ fn main() -> ExitCode {
   `#[global_allocator]` without imposing it on the library. `harness = false`
   makes its `main` the project's own: no test harness threads, no output
   capture, one thread.
-- **`HostStingy`** is `Stingy<System, 128, 262_144, 256>` -- 128 scope names,
+- **`HostStingy`** is the type `Stingy<System, 128, 262_144, 256>` -- 128 scope names,
   262,144 live blocks, 256 kinds, stores and operations; a project that needs
   more names its own `Stingy<System, S, B, N>`. Its table costs some 6 MiB of
   static memory on a 64-bit host, reported in the bookkeeping.
-- **`ProfileMain::run`** reads `STINGY4RUST_REPORT` (where to write the report;
-  required) and `STINGY4RUST_PROFILE` (one profile's name; optional), runs each
-  profile in order on the main thread -- `begin`, the body, `end` -- writes the
-  report, and exits 0 if every run is `Measured`, 2 otherwise, the report
-  written either way.
+- **`ProfileMain::run`** reads, through its `Environment` port,
+  `STINGY4RUST_REPORT` (where to write the report; required) and
+  `STINGY4RUST_PROFILE` (one profile's name; optional), runs each profile in
+  order on the main thread -- `begin`, the body, `end` -- hands the report to its
+  `ReportSink` port, and exits 0 if every run is `Measured`, 2 otherwise, the
+  report written either way. `ProcessEnvironment` and `FileReportSink` are the
+  host's adapters; tests give fakes. `ProfileMain` reaches the allocator through
+  the core's `Measuring` trait -- `Recorder` plus `begin` and `end` -- which
+  `Stingy` implements, so the board crate's allocator plugs in the same way.
 - **The subcommand** finds the package with a test target named `stingy` from
   `cargo metadata --format-version 1 --no-deps` (`--package` chooses among
   several; none is an error), then runs

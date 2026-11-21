@@ -267,9 +267,10 @@ that never allocates, tested without any allocator: the tests call the
 ledger's methods with made-up addresses.
 
 **Files**: the `core/src/ledger/` and `core/src/figures/` rows of section 4.1.
-Add `spin` to the core: `spin = { version = "0.9", default-features = false, features = ["spin_mutex"] }`
-(confirm the current major with the owner if 0.9 is not the latest; it is the
-core's only dependency, ADR-TechnologyFreeSafeCore).
+Add `spin` to the core: `spin = { version = "0.12", default-features = false, features = ["spin_mutex"] }`
+(0.12.3 was the newest on 2026-11-21, its `spin_mutex` feature `no_std` and
+free of allocation; it is the core's only dependency,
+ADR-TechnologyFreeSafeCore).
 
 **API** (`core/src/ledger/ledger.rs`):
 

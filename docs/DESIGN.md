@@ -99,7 +99,7 @@ no allocation (section 4.3). Every published crate shares one version, from
 
 ### 4.1 The ledger
 
-`stingy4rust::ledger::Ledger<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>`
+`stingy4rust::ledger::ledger::Ledger<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>`
 holds every count of a run in fixed-size tables. Its counting path -- every
 method an allocator call reaches -- **never allocates** and never panics
 (ADR-CountingNeverAllocates): a table that fills sets an error the run reports,

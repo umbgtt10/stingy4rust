@@ -1,0 +1,57 @@
+// Copyright 2026 Umberto Gotti <umberto.gotti@umbertogotti.dev>
+// Licensed under the MIT License
+// SPDX-License-Identifier: MIT
+
+use crate::reports::crap_function::CrapFunction;
+use serde::Deserialize;
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct CrapReport {
+    total_functions: u32,
+    crappy_functions: u32,
+    crappy_percent: f64,
+    functions: Vec<CrapFunction>,
+}
+
+impl CrapReport {
+    #[must_use]
+    pub const fn crappy_functions(&self) -> u32 {
+        self.crappy_functions
+    }
+
+    #[must_use]
+    pub const fn crappy_percent(&self) -> f64 {
+        self.crappy_percent
+    }
+
+    #[must_use]
+    pub fn functions(&self) -> &[CrapFunction] {
+        &self.functions
+    }
+
+    #[must_use]
+    pub const fn is_clean(&self) -> bool {
+        self.crappy_functions == 0
+    }
+
+    #[must_use]
+    pub fn offenders(&self) -> Vec<&CrapFunction> {
+        self.functions
+            .iter()
+            .filter(|function| !function.is_clean())
+            .collect()
+    }
+
+    #[must_use]
+    pub fn summary(&self) -> String {
+        format!(
+            "crap4rust: {}/{} functions crappy ({:.1}%)",
+            self.crappy_functions, self.total_functions, self.crappy_percent
+        )
+    }
+
+    #[must_use]
+    pub const fn total_functions(&self) -> u32 {
+        self.total_functions
+    }
+}

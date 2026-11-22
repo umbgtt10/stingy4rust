@@ -6,6 +6,23 @@ edition.workspace = true
 rust-version.workspace = true
 license.workspace = true
 repository.workspace = true
+authors.workspace = true
 readme = "../README.md"
 keywords = ["allocator", "microcontroller", "no-std", "memory", "budget"]
 categories = ["memory-management", "no-std"]
+
+# `unsafe` denied, never forbidden: the allocator's file alone allows it,
+# and a forbid could not be lifted there.
+[lints.rust]
+unsafe_code = "deny"
+
+# The family's configuration: pedantic and nursery at warn, which stage 1's
+# -D warnings turns into errors.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+doc_markdown = "allow"
+too_long_first_doc_paragraph = "allow"
+module_name_repetitions = "allow"

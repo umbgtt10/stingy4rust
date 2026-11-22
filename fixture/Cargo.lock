@@ -11,6 +11,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "overflowing"
+version = "0.0.0"
+dependencies = [
+ "stingy4rust-core",
+ "stingy4rust-host",
+]
+
+[[package]]
 name = "spin"
 version = "0.12.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -29,3 +37,15 @@ version = "0.0.1"
 dependencies = [
  "stingy4rust-core",
 ]
+
+[[package]]
+name = "threaded"
+version = "0.0.0"
+dependencies = [
+ "stingy4rust-core",
+ "stingy4rust-host",
+]
+
+[[package]]
+name = "unmeasured"
+version = "0.0.0"

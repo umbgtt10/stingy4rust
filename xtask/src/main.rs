@@ -23,7 +23,9 @@ use xtask::gates::deny_gate::DenyGate;
 use xtask::gates::dry_gate::DryGate;
 use xtask::gates::gate::Gate;
 use xtask::gates::iceberg_gate::IcebergGate;
+use xtask::gates::own_budget_gate::OwnBudgetGate;
 use xtask::gates::shear_gate::ShearGate;
+use xtask::gates::stage_failure::StageFailure;
 use xtask::gates::stage2::Stage2;
 use xtask::gates::stern_gate::SternGate;
 use xtask::gates::twin_gate::TwinGate;
@@ -71,6 +73,8 @@ const UNSAFE_ALLOWED: [&[&str]; 2] = [
 ];
 const CRAP_THRESHOLD: &str = "15";
 const ICEBERG_THRESHOLD: &str = "10";
+const FIXTURE: &str = "fixture";
+const FIXTURE_PACKAGE: &str = "measured";
 const DRY_EXCLUDES: [&[&str]; 7] = [
     &["board", "tests"],
     &["cli", "tests"],
@@ -101,16 +105,7 @@ fn main() -> ExitCode {
 fn run_sync() -> ExitCode {
     let runner = SystemCommandRunner::new();
     let update = CargoUpdateGate::new(&runner, workspace_manifest_path());
-    match Stage2::new(vec![&update]).run() {
-        Ok(()) => {
-            println!("\nstingy4rust sync done");
-            ExitCode::SUCCESS
-        }
-        Err(reason) => {
-            eprintln!("\nFailed: {reason}");
-            ExitCode::FAILURE
-        }
-    }
+    finished(Stage2::new(vec![&update]).run(), "stingy4rust sync done")
 }
 
 // core's grip and braintax as the commit stages it, written into the commit
@@ -258,13 +253,36 @@ fn run_stage2() -> ExitCode {
         String::from(ICEBERG_THRESHOLD),
     );
 
+    // Last, as it builds the subcommand and the fixture in release: this
+    // checkout's subcommand holds the fixture to the fixture's own budget.
+    let own_budget = OwnBudgetGate::new(
+        &runner,
+        workspace_manifest_path(),
+        root.join(FIXTURE).to_string_lossy().into_owned(),
+        String::from(FIXTURE_PACKAGE),
+    );
+
     let gates: Vec<&dyn Gate> = vec![
-        &boundary, &confined, &stern, &shear, &dry, &crap, &twin, &iceberg, &deny,
+        &boundary,
+        &confined,
+        &stern,
+        &shear,
+        &dry,
+        &crap,
+        &twin,
+        &iceberg,
+        &deny,
+        &own_budget,
     ];
 
-    match Stage2::new(gates).run() {
+    finished(Stage2::new(gates).run(), "stingy4rust Stage 2 passed!")
+}
+
+// A sequence of gates ended: what it says on success, or why it failed.
+fn finished(outcome: Result<(), StageFailure>, success: &str) -> ExitCode {
+    match outcome {
         Ok(()) => {
-            println!("\nstingy4rust Stage 2 passed!");
+            println!("\n{success}");
             ExitCode::SUCCESS
         }
         Err(reason) => {

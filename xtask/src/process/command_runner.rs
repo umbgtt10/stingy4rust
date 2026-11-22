@@ -10,6 +10,13 @@ pub trait CommandRunner {
 
     fn run_streaming(&self, program: &str, args: &[String]) -> Result<Option<i32>, LaunchFailure>;
 
+    fn run_streaming_in(
+        &self,
+        directory: &str,
+        program: &str,
+        args: &[String],
+    ) -> Result<Option<i32>, LaunchFailure>;
+
     fn run_capturing(
         &self,
         program: &str,

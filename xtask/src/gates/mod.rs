@@ -10,6 +10,7 @@ pub mod dry_gate;
 pub mod gate;
 pub mod gate_failure;
 pub mod iceberg_gate;
+pub mod own_budget_gate;
 pub mod shear_gate;
 pub mod stage2;
 pub mod stage_failure;

@@ -10,6 +10,7 @@
 
 extern crate alloc;
 
+pub mod budget;
 pub mod figures;
 pub mod ledger;
 pub mod report;

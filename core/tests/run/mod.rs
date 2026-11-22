@@ -6,4 +6,5 @@ pub mod operation_guard_tests;
 pub mod run_tests;
 pub mod scope_guard_tests;
 pub mod storage_meter_tests;
+pub mod support;
 pub mod wire_meter_tests;

@@ -2,7 +2,7 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-use crate::support::recording_recorder::RecordingRecorder;
+use crate::run::support::recording_recorder::RecordingRecorder;
 use stingy4rust::figures::scope_name::ScopeName;
 use stingy4rust::run::storage_meter::StorageMeter;
 

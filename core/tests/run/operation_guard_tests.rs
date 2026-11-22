@@ -2,7 +2,7 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-use crate::support::recording_recorder::RecordingRecorder;
+use crate::run::support::recording_recorder::RecordingRecorder;
 use stingy4rust::run::operation_guard::OperationGuard;
 
 #[test]

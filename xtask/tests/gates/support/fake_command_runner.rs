@@ -20,6 +20,7 @@ pub struct FakeCommandRunner {
     replies: RefCell<VecDeque<String>>,
     calls: RefCell<Vec<Vec<String>>>,
     programs: RefCell<Vec<String>>,
+    directories: RefCell<Vec<Option<String>>>,
 }
 
 impl FakeCommandRunner {
@@ -34,6 +35,7 @@ impl FakeCommandRunner {
             replies: RefCell::new(VecDeque::new()),
             calls: RefCell::new(Vec::new()),
             programs: RefCell::new(Vec::new()),
+            directories: RefCell::new(Vec::new()),
         }
     }
 
@@ -82,6 +84,11 @@ impl FakeCommandRunner {
         self
     }
 
+    // Where each call ran: none for the caller's own directory.
+    pub fn directories(&self) -> Vec<Option<String>> {
+        self.directories.borrow().clone()
+    }
+
     pub fn calls(&self) -> Vec<Vec<String>> {
         self.calls.borrow().clone()
     }
@@ -94,6 +101,18 @@ impl FakeCommandRunner {
     }
 
     fn record(&self, program: &str, args: &[String]) -> Result<(), LaunchFailure> {
+        self.record_in(None, program, args)
+    }
+
+    fn record_in(
+        &self,
+        directory: Option<&str>,
+        program: &str,
+        args: &[String],
+    ) -> Result<(), LaunchFailure> {
+        self.directories
+            .borrow_mut()
+            .push(directory.map(String::from));
         self.programs.borrow_mut().push(String::from(program));
         self.calls.borrow_mut().push(args.to_vec());
         if self.launches {
@@ -120,6 +139,16 @@ impl CommandRunner for FakeCommandRunner {
 
     fn run_streaming(&self, program: &str, args: &[String]) -> Result<Option<i32>, LaunchFailure> {
         self.record(program, args)?;
+        Ok(self.streaming_code)
+    }
+
+    fn run_streaming_in(
+        &self,
+        directory: &str,
+        program: &str,
+        args: &[String],
+    ) -> Result<Option<i32>, LaunchFailure> {
+        self.record_in(Some(directory), program, args)?;
         Ok(self.streaming_code)
     }
 

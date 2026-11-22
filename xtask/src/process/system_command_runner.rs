@@ -50,6 +50,23 @@ impl CommandRunner for SystemCommandRunner {
             })
     }
 
+    fn run_streaming_in(
+        &self,
+        directory: &str,
+        program: &str,
+        args: &[String],
+    ) -> Result<Option<i32>, LaunchFailure> {
+        Command::new(program)
+            .args(args)
+            .current_dir(directory)
+            .status()
+            .map(|status| status.code())
+            .map_err(|error| LaunchFailure {
+                program: program.to_string(),
+                reason: error.to_string(),
+            })
+    }
+
     fn run_capturing(
         &self,
         program: &str,

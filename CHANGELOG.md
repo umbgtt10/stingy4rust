@@ -27,6 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and `HostStingy` over the system's; `ProfileMain`, a profile target's `main`,
   which runs each profile on one thread and writes the report to the file
   `STINGY4RUST_REPORT` names, exiting 2 if a run could not be measured.
+- Budgets (`stingy4rust::budget`): a run's figures compared with a target's
+  budget -- within, a gain, over, unbudgeted or missing -- with zero tolerance
+  unless a figure carries one, and recorded as it.
+- `cargo stingy4rust report|check|record`: finds the package whose `stingy`
+  test target holds the profiles, runs it in release, and prints a table or
+  JSON; exits 0 within budget, 1 over it, 2 unable to measure. The budget file
+  is written with sorted keys, so a change reads as a diff.
 
 ## [0.0.1] - 2026-11-22
 

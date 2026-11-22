@@ -53,6 +53,33 @@ fn main() -> ExitCode {
 Run with `STINGY4RUST_REPORT` naming a file, it runs each profile on one
 thread and writes every figure to it as JSON.
 
+## Usage
+
+```
+cargo stingy4rust report [--package P] [--profile NAME] [--target T] [--format table|json]
+cargo stingy4rust check  [--package P] [--profile NAME] [--target T] [--format table|json] [--budget PATH]
+cargo stingy4rust record [--package P] [--profile NAME] [--target T] [--budget PATH]
+```
+
+- `report` runs the profiles, in release, and prints their figures; no budget
+  is read.
+- `check` runs them and holds every figure against the budget,
+  `stingy4rust-budget.json` at the workspace root unless `--budget` names
+  another; it never writes.
+- `record` runs them and writes their figures as the budget of this target --
+  every profile, or the one named -- keeping the tolerances of figures still
+  measured, and prints what moved. Recording is deliberate: the gate never
+  records on its own.
+
+The package is the one with a test target named `stingy`, or the one
+`--package` names; the target is the host's unless `--target` names one.
+
+| exit code | means |
+|---|---|
+| 0 | within budget -- gains included, with a hint to record them |
+| 1 | a figure over its budget, measured with none, or budgeted and not measured |
+| 2 | unable to measure: no profile target, a build that failed, a run not measured, a report or a budget that cannot be read |
+
 ## Design
 
 - [`docs/DESIGN.md`](docs/DESIGN.md): what it measures and exactly how, the

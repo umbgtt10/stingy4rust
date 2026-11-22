@@ -2,6 +2,8 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
+mod figures;
 mod ledger;
+mod report;
 mod run;
 mod support;

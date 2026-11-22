@@ -18,7 +18,7 @@ const SEED: u64 = 2026;
 #[global_allocator]
 static STINGY: HostStingy = Stingy::new(System);
 
-static PROFILES: [Profile; 5] = [
+static PROFILES: [Profile; 6] = [
     Profile {
         name: "three-blocks",
         seed: SEED,
@@ -43,6 +43,11 @@ static PROFILES: [Profile; 5] = [
         name: "outside",
         seed: SEED,
         body: outside,
+    },
+    Profile {
+        name: "wire-and-storage",
+        seed: SEED,
+        body: wire_and_storage,
     },
 ];
 
@@ -97,3 +102,24 @@ fn growing(run: &Run) {
 fn outside(_run: &Run) {
     drop(black_box(Box::new([0_u8; 32])));
 }
+
+// Operation `exchange` twice, each sending `ping` of 10 bytes and `pong` of
+// 100; store `journal` written 50 bytes three times, in two transactions,
+// holding 150 at rest and 4096 on disk.
+fn wire_and_storage(run: &Run) {
+    let wire = run.wire();
+    for _ in 0..2 {
+        let _exchange = run.operation("exchange");
+        wire.sent("ping", 10);
+        wire.sent("pong", 100);
+    }
+    let journal = run.storage("journal");
+    for _ in 0..3 {
+        journal.written(50);
+    }
+    journal.transaction();
+    journal.transaction();
+    journal.at_rest(150);
+    journal.on_disk(4096);
+}
+

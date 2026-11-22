@@ -1,8 +1,9 @@
 # The projects cargo-stingy4rust is run on in its own tests and its own gate: a
 # workspace of its own, outside the repository's, so each project's profile
 # target, budget and deliberate breakage stay out of the tool's build. Members
-# come with the slices that need them: measured now; overflowing, threaded and
-# unmeasured with the subcommand.
+# are measured, whose figures are known exactly; overflowing, whose ledger is too
+# small for its profile; threaded, whose profile allocates on a second thread;
+# and unmeasured, with no profile target at all.
 [workspace]
 resolver = "2"
-members = ["measured"]
+members = ["measured", "overflowing", "threaded", "unmeasured"]

@@ -10,5 +10,8 @@ pub mod frame_stack;
 pub mod ledger;
 pub mod ledger_tables;
 pub mod max_depth;
+pub mod name_event;
+pub mod name_role;
+pub mod name_table;
 pub mod run_status;
 pub mod scope_table;

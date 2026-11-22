@@ -2,8 +2,6 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-use alloc::vec::Vec;
-
 use crate::figures::heap_figures::HeapFigures;
 use crate::figures::scope_name::ScopeName;
 use crate::figures::tally::Tally;
@@ -12,6 +10,9 @@ use crate::ledger::block_table::BlockTable;
 use crate::ledger::bookkeeping::Bookkeeping;
 use crate::ledger::frame::Frame;
 use crate::ledger::frame_stack::FrameStack;
+use crate::ledger::name_event::NameEvent;
+use crate::ledger::name_role::NameRole;
+use crate::ledger::name_table::NameTable;
 use crate::ledger::run_status::RunStatus;
 use crate::ledger::scope_table::ScopeTable;
 
@@ -25,7 +26,9 @@ use crate::ledger::scope_table::ScopeTable;
 pub struct LedgerTables<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> {
     blocks: BlockTable<BLOCKS>,
     scopes: ScopeTable<SCOPES>,
+    names: NameTable<NAMES>,
     frames: FrameStack,
+    operation: Option<usize>,
     status: RunStatus,
     thread: usize,
     live: u64,
@@ -41,7 +44,9 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         Self {
             blocks: BlockTable::new(),
             scopes: ScopeTable::new(),
+            names: NameTable::new(),
             frames: FrameStack::new(),
+            operation: None,
             status: RunStatus::Measured,
             thread: 0,
             live: 0,
@@ -61,15 +66,28 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         }
     }
 
+    pub fn at_rest(&mut self, store: ScopeName, bytes: u64) {
+        self.stored(store, NameEvent::AtRest(bytes));
+    }
+
     pub fn begin(&mut self, thread: usize) {
         self.blocks.clear();
         self.scopes.clear();
+        self.names.clear();
         self.frames.clear();
+        self.operation = None;
         self.status = RunStatus::Measured;
         self.thread = thread;
         self.live = 0;
         self.peak = 0;
         self.untracked_frees = 0;
+    }
+
+    // Opens an operation: the wire is charged to it, as well as to each kind,
+    // until it ends -- or until another opens, which takes the charge over, as
+    // operations do not nest.
+    pub fn begin_operation(&mut self, name: &'static str) {
+        self.operation = self.named(NameRole::Operation, Self::plain(name));
     }
 
     #[must_use]
@@ -81,6 +99,17 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
             name_capacity: NAMES as u64,
             untracked_frees: self.untracked_frees,
             ledger_bytes,
+        }
+    }
+
+    // Ends an operation and counts it.
+    pub fn end_operation(&mut self, name: &'static str) {
+        let slot = self.named(NameRole::Operation, Self::plain(name));
+        if let Some(slot) = slot {
+            self.names.record(slot, NameEvent::Completed);
+        }
+        if self.operation == slot {
+            self.operation = None;
         }
     }
 
@@ -134,6 +163,10 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         }
     }
 
+    pub fn on_disk(&mut self, store: ScopeName, bytes: u64) {
+        self.stored(store, NameEvent::OnDisk(bytes));
+    }
+
     pub fn reallocated(
         &mut self,
         old_address: usize,
@@ -157,6 +190,16 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         }
     }
 
+    // One message of a kind, charged to the operation open too, if one is.
+    pub fn sent(&mut self, kind: &'static str, bytes: u64) {
+        if let Some(slot) = self.named(NameRole::Kind, Self::plain(kind)) {
+            self.names.record(slot, NameEvent::Counted(bytes));
+            if let Some(operation) = self.operation {
+                self.names.record(operation, NameEvent::Counted(bytes));
+            }
+        }
+    }
+
     // What the run counted, its heap the sum of its scopes'. Allocates: call it
     // only once counting has stopped.
     #[must_use]
@@ -170,11 +213,19 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
             heap,
             peak: self.peak,
             scopes,
-            wire: Vec::new(),
-            storage: Vec::new(),
-            operations: Vec::new(),
+            wire: self.names.wire(),
+            storage: self.names.storage(),
+            operations: self.names.operations(),
             bookkeeping: self.bookkeeping(ledger_bytes),
         }
+    }
+
+    pub fn transaction(&mut self, store: ScopeName) {
+        self.stored(store, NameEvent::Completed);
+    }
+
+    pub fn written(&mut self, store: ScopeName, bytes: u64) {
+        self.stored(store, NameEvent::Counted(bytes));
     }
 
     // After `size` was charged to `slot`, which now holds `slot_live`: every
@@ -203,6 +254,25 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         }
     }
 
+    // The slot of a kind, store or operation; a name with a dot is the run's
+    // `NameWithDot` and a full table its `NamesExhausted`, and neither is
+    // counted.
+    fn named(&mut self, role: NameRole, name: ScopeName) -> Option<usize> {
+        if name.name.contains('.') {
+            self.fail(RunStatus::NameWithDot);
+            return None;
+        }
+        let slot = self.names.intern(role, name);
+        if slot.is_none() {
+            self.fail(RunStatus::NamesExhausted);
+        }
+        slot
+    }
+
+    const fn plain(name: &'static str) -> ScopeName {
+        ScopeName { name, number: None }
+    }
+
     // A call from a thread other than the run's is refused, and is the run's
     // `ForeignThread`.
     const fn refused(&mut self, thread: usize) -> bool {
@@ -211,6 +281,14 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize>
         }
         self.fail(RunStatus::ForeignThread);
         true
+    }
+
+    // Something happened to a store: counted against it, unless its name
+    // cannot be.
+    fn stored(&mut self, store: ScopeName, event: NameEvent) {
+        if let Some(slot) = self.named(NameRole::Store, store) {
+            self.names.record(slot, event);
+        }
     }
 
     const fn summed(sum: HeapFigures, heap: HeapFigures) -> HeapFigures {

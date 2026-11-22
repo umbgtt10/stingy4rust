@@ -6,4 +6,5 @@ pub mod block_table_tests;
 pub mod frame_stack_tests;
 pub mod ledger_tables_tests;
 pub mod ledger_tests;
+pub mod name_table_tests;
 pub mod scope_table_tests;

@@ -21,6 +21,11 @@ path = "src/lib.rs"
 name = "all_tests"
 path = "tests/all_tests.rs"
 
+# The technology-free counting: spin alone. xtask's technology-free gate
+# holds this list to it.
+[dependencies]
+spin = { workspace = true }
+
 # No `unsafe` in any target, tests included; the crate root says so as well.
 [lints.rust]
 unsafe_code = "forbid"
@@ -35,3 +40,8 @@ missing_panics_doc = "allow"
 doc_markdown = "allow"
 too_long_first_doc_paragraph = "allow"
 module_name_repetitions = "allow"
+# The design names each type's module after it, inside a folder named for its
+# role -- stingy4rust::ledger::ledger::Ledger, stingy4rust::run::run::Run -- as
+# stern4rust's named-subject rule asks; a type that is its role's namesake
+# shares the folder's name.
+module_inception = "allow"

@@ -78,6 +78,15 @@ which changes what every gate behind it measures; stern next, because its
 corrections are renames and moves; the tool's own budget last, because it
 builds the fixture in release.
 
+dry4rust checks the published crates' sources at floor 25 against
+`dry4rust-baseline.json`, the duplication accepted with a reason, so it fails
+on what a change adds. It holds one group, at the owner's word: `Ledger`'s
+`allocated` and `freed`, each one call handing the allocator's three arguments
+to the tables -- alike because `alloc` and `dealloc` take the same arguments,
+not because one was copied. Re-record it only at the owner's word, with the
+gate's exclusions and floor:
+`cargo dry4rust --path "$PWD" --exclude "$PWD/board/tests" --exclude "$PWD/cli/tests" --exclude "$PWD/core/tests" --exclude "$PWD/host/tests" --exclude "$PWD/fixture" --exclude "$PWD/validation" --exclude "$PWD/xtask" --min-nodes 25 --baseline "$PWD/dry4rust-baseline.json" baseline`.
+
 `cargo install just`
 `cargo install --locked cargo-llvm-cov`
 `cargo install --locked cargo-stern4rust`

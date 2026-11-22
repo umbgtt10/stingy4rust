@@ -1,4 +1,14 @@
 {
   "version": 1,
-  "entries": []
+  "entries": [
+    {
+      "kind": "exact",
+      "fingerprint": "4ed0d90365055b90",
+      "members": 2,
+      "names": [
+        "Ledger::allocated",
+        "Ledger::freed"
+      ]
+    }
+  ]
 }

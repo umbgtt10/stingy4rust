@@ -1,0 +1,175 @@
+// Copyright 2026 Umberto Gotti <umberto.gotti@umbertogotti.dev>
+// Licensed under the MIT License
+// SPDX-License-Identifier: MIT
+
+use stingy4rust::figures::heap_figures::HeapFigures;
+use stingy4rust::figures::scope_name::ScopeName;
+use stingy4rust::ledger::ledger::Ledger;
+use stingy4rust::ledger::run_status::RunStatus;
+
+static SHARED: Ledger<4, 8, 4> = Ledger::new();
+const THREAD: usize = 1;
+
+const fn worker() -> ScopeName {
+    ScopeName {
+        name: "worker",
+        number: None,
+    }
+}
+
+#[test]
+fn allocated_after_end_is_not_counted() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    ledger.allocated(0x1000, 64, THREAD);
+    let _ = ledger.end();
+
+    // Act
+    ledger.allocated(0x2000, 64, THREAD);
+
+    // Assert
+    assert_eq!(ledger.end().heap.allocations, 1);
+}
+
+#[test]
+fn allocated_before_begin_is_not_counted() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+
+    // Act
+    ledger.allocated(0x1000, 64, THREAD);
+
+    // Assert
+    let bookkeeping = ledger.bookkeeping();
+    assert_eq!(bookkeeping.tracked_blocks_peak, 0);
+    assert_eq!(bookkeeping.block_capacity, 8);
+}
+
+#[test]
+fn bookkeeping_reports_the_ledger_s_own_size() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+
+    // Act
+    let bookkeeping = ledger.bookkeeping();
+
+    // Assert
+    assert_eq!(
+        bookkeeping.ledger_bytes,
+        size_of::<Ledger<4, 8, 4>>() as u64
+    );
+    assert_eq!(bookkeeping.block_capacity, 8);
+}
+
+#[test]
+fn end_hands_back_what_was_counted_between_begin_and_end() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    let depth = ledger.enter(worker());
+    ledger.allocated(0x1000, 64, THREAD);
+    ledger.reallocated(0x1000, 64, 0x2000, 128, THREAD);
+    ledger.freed(0x2000, 128, THREAD);
+    ledger.leave(depth);
+
+    // Act
+    let tally = ledger.end();
+
+    // Assert
+    assert_eq!(tally.status, RunStatus::Measured);
+    assert_eq!(
+        tally.heap,
+        HeapFigures {
+            allocations: 1,
+            reallocations: 1,
+            bytes_allocated: 192,
+            bytes_freed: 192,
+            live_at_end: 0,
+        }
+    );
+    assert_eq!(tally.scopes[1].name, worker());
+    assert_eq!(tally.scopes[1].entries, 1);
+    assert_eq!(
+        tally.bookkeeping.ledger_bytes,
+        size_of::<Ledger<4, 8, 4>>() as u64
+    );
+}
+
+#[test]
+fn enter_before_begin_opens_no_scope() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+
+    // Act
+    let depth = ledger.enter(worker());
+
+    // Assert
+    assert_eq!(depth, 0);
+    ledger.begin(THREAD);
+    assert_eq!(ledger.end().scopes.len(), 1);
+}
+
+#[test]
+fn freed_after_end_is_not_counted() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    ledger.allocated(0x1000, 64, THREAD);
+    let _ = ledger.end();
+
+    // Act
+    ledger.freed(0x1000, 64, THREAD);
+
+    // Assert
+    let heap = ledger.end().heap;
+    assert_eq!(heap.bytes_freed, 0);
+    assert_eq!(heap.live_at_end, 64);
+}
+
+#[test]
+fn leave_after_end_changes_nothing() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    let _ = ledger.enter(worker());
+    let _ = ledger.enter(worker());
+    let _ = ledger.end();
+
+    // Act
+    ledger.leave(1);
+
+    // Assert
+    let tally = ledger.end();
+    assert_eq!(tally.status, RunStatus::Measured);
+    assert_eq!(tally.scopes[1].entries, 2);
+}
+
+#[test]
+fn new_builds_a_ledger_a_static_can_hold() {
+    // Arrange
+    SHARED.begin(THREAD);
+
+    // Act
+    SHARED.allocated(0x1000, 8, THREAD);
+
+    // Assert
+    assert_eq!(SHARED.end().heap.allocations, 1);
+}
+
+#[test]
+fn reallocated_after_end_is_not_counted() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    ledger.allocated(0x1000, 8, THREAD);
+    let _ = ledger.end();
+
+    // Act
+    ledger.reallocated(0x1000, 8, 0x2000, 16, THREAD);
+
+    // Assert
+    let heap = ledger.end().heap;
+    assert_eq!(heap.reallocations, 0);
+    assert_eq!(heap.allocations, 1);
+}

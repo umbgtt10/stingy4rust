@@ -2,9 +2,8 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-//! The measuring behind `cargo-stingy4rust`: the tables a ledger counts a
-//! run's heap in -- live blocks, open scope entries, scopes -- never
-//! allocating while it counts, and the figures they hold.
+//! The measuring behind `cargo-stingy4rust`: a ledger that counts a run's heap
+//! by scope, never allocating while it counts, and the figures it hands back.
 
 #![no_std]
 #![forbid(unsafe_code)]

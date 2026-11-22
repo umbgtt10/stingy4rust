@@ -20,6 +20,9 @@ authors = ["Umberto Gotti <umberto.gotti@umbertogotti.dev>"]
 # Declared once here; every member takes them with `.workspace = true`, so a
 # version is bumped in one place and no two members can disagree.
 [workspace.dependencies]
+# The published core, taken by path so host and the tools around it build
+# against this checkout; its version, because a published host names one.
+stingy4rust-core = { path = "core", version = "0.0.1" }
 serde = { version = "1", features = ["derive"] }
 # The core's one dependency: a lock built in a `const fn` and taken without
 # allocating, so a `static` allocator's ledger is `Sync` with no `unsafe`.

@@ -18,6 +18,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   freed in another scope is credited back to the scope that allocated it; a
   table that fills, a frame too deep, another thread's call, a name with a dot
   or a guard left out of order is the run's status instead of a figure.
+- Runs and profiles (`stingy4rust::run`): a profile is a plain function in a
+  registry, handed a `Run` whose scopes, operations, wire meter and storage
+  meters reach a `Recorder`.
+- The report (`stingy4rust::report`): every figure as a dotted path, written as
+  JSON by the core's own writer, keys in a fixed order.
+- `stingy4rust-host`: `Stingy`, the counting `GlobalAlloc` over any allocator,
+  and `HostStingy` over the system's; `ProfileMain`, a profile target's `main`,
+  which runs each profile on one thread and writes the report to the file
+  `STINGY4RUST_REPORT` names, exiting 2 if a run could not be measured.
 
 ## [0.0.1] - 2026-11-22
 

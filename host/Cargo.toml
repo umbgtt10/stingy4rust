@@ -11,6 +11,22 @@ readme = "../README.md"
 keywords = ["allocator", "allocation", "memory", "budget", "ci"]
 categories = ["development-tools", "memory-management"]
 
+autotests = false
+
+[lib]
+name = "stingy4rust_host"
+path = "src/lib.rs"
+
+[[test]]
+name = "all_tests"
+path = "tests/all_tests.rs"
+
+[dependencies]
+stingy4rust-core = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
 # `unsafe` denied, never forbidden: the allocator's file alone allows it,
 # and a forbid could not be lifted there.
 [lints.rust]

@@ -1,8 +1,8 @@
 # The projects cargo-stingy4rust is run on in its own tests and its own gate: a
 # workspace of its own, outside the repository's, so each project's profile
 # target, budget and deliberate breakage stay out of the tool's build. Members
-# come with the slices that need them: measured, overflowing, threaded,
-# unmeasured.
+# come with the slices that need them: measured now; overflowing, threaded and
+# unmeasured with the subcommand.
 [workspace]
 resolver = "2"
-members = []
+members = ["measured"]

@@ -566,7 +566,7 @@ back here as an issue for the owner, not as a change made from there.
 **Goal**: the same profiles on a board and on QEMU, with budgets per target.
 
 **Settled**: the crate `stingy4rust-board` (`no_std`; its placeholder is in
-`board/`), `BoardStingy<A: GlobalAlloc, SCOPES, NAMES>`
+`board/`, `publish = false` until this slice -- take that line out), `BoardStingy<A: GlobalAlloc, SCOPES, NAMES>`
 keeping each block's scope in a header it reserves in front of the block
 (design section 9, ADR-FreedElsewhereIsCreditedExactly) -- the header's cost
 reported in the bookkeeping; the report written as the host's JSON over

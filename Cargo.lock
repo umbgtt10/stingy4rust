@@ -7,6 +7,10 @@ name = "cargo-stingy4rust"
 version = "0.0.1"
 
 [[package]]
+name = "stingy4rust-board"
+version = "0.0.1"
+
+[[package]]
 name = "stingy4rust-core"
 version = "0.0.1"
 

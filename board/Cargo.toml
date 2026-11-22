@@ -1,0 +1,11 @@
+[package]
+name = "stingy4rust-board"
+description = "A board's counting allocator behind cargo-stingy4rust: a Rust codebase's heap and peak heap under fixed load profiles, on a microcontroller. In development: this release reserves the name."
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+readme = "../README.md"
+keywords = ["allocator", "microcontroller", "no-std", "memory", "budget"]
+categories = ["memory-management", "no-std"]

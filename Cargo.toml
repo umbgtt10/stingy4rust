@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["core", "cli", "host"]
+members = ["core", "cli", "host", "board"]
 
 # One version for every member: the published crates release together.
 [workspace.package]

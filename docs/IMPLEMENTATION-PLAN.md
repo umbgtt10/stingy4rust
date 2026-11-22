@@ -162,7 +162,7 @@ name.
 
 ```
 stingy4rust/
-├── Cargo.toml                  workspace: core, host, cli, validation, xtask; fixture excluded
+├── Cargo.toml                  workspace: core, host, board, cli, validation, xtask; fixture excluded
 ├── rust-toolchain.toml         1.99.1 (already there)
 ├── justfile                    stage1, stage2, sync, hooks
 ├── stern4rust.toml             header-file = "docs/header.txt"
@@ -174,6 +174,7 @@ stingy4rust/
 ├── .github/workflows/ci.yml    stage1 and stage2 on three systems
 ├── core/                       stingy4rust-core, library `stingy4rust` -- no_std, safe
 ├── host/                       stingy4rust-host -- the host allocator, ProfileMain
+├── board/                      stingy4rust-board -- a placeholder until slice 6
 ├── cli/                        cargo-stingy4rust, library `stingy4rust_cli`
 ├── validation/                 end-to-end scenarios (publish = false)
 ├── xtask/                      the gates (publish = false)
@@ -243,9 +244,10 @@ that do nothing yet.
 | `dry4rust-baseline.json` | record it once the crates exist: `cargo dry4rust --path . --min-nodes 25 --baseline "$PWD/dry4rust-baseline.json" baseline` -- it should hold no group |
 | `CHANGELOG.md` | dry4rust's preamble, an `Unreleased` section |
 
-**Already there**: `host/`, the placeholder that reserved `stingy4rust-host`
-(`lib.rs` with `#![deny(unsafe_code)]`, nothing else yet), in the root
-workspace.
+**Already there**: `host/` and `board/`, the placeholders that reserved
+`stingy4rust-host` and `stingy4rust-board` (a `lib.rs` with
+`#![deny(unsafe_code)]`, `board`'s also `#![no_std]`, nothing else yet), in the
+root workspace. `board/` stays as it is until slice 6.
 
 **Create**: `validation/` (`publish = false`), `fixture/Cargo.toml` (a
 workspace of its own, no members yet), and add `validation` to the root
@@ -563,7 +565,8 @@ back here as an issue for the owner, not as a change made from there.
 
 **Goal**: the same profiles on a board and on QEMU, with budgets per target.
 
-**Settled**: a crate `stingy4rust-board` (`no_std`), `BoardStingy<A: GlobalAlloc, SCOPES, NAMES>`
+**Settled**: the crate `stingy4rust-board` (`no_std`; its placeholder is in
+`board/`), `BoardStingy<A: GlobalAlloc, SCOPES, NAMES>`
 keeping each block's scope in a header it reserves in front of the block
 (design section 9, ADR-FreedElsewhereIsCreditedExactly) -- the header's cost
 reported in the bookkeeping; the report written as the host's JSON over
@@ -580,8 +583,8 @@ these answers.
 
 Only at the owner's word. When asked:
 
-1. Reserve any new crate name first (`stingy4rust-board`;
-   `stingy4rust-host` is reserved, 0.0.1) -- the owner reserves names.
+1. Reserve any new crate name first -- the owner reserves names. All four
+   planned names are reserved, at 0.0.1.
 2. Bump `[workspace.package] version` once, for every published crate; move
    `CHANGELOG.md`'s `Unreleased` under the version, dated.
 3. `cargo package --workspace`, which builds every crate as it would be

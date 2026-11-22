@@ -1,6 +1,6 @@
 [package]
 name = "stingy4rust-host"
-description = "The host's counting allocator behind cargo-stingy4rust: a Rust codebase's heap and peak heap under fixed load profiles. In development: this release reserves the name."
+description = "The host's side of cargo-stingy4rust: a counting global allocator over any other, and the main of a project's profile target."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

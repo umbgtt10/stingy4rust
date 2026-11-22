@@ -4,11 +4,11 @@ A cargo subcommand that holds a Rust codebase to **budgets**: heap, peak heap,
 storage and wire bytes, measured under **fixed load profiles** and checked in
 CI, so what a change costs is seen and what it saves is kept.
 
-**In development.** Version 0.0.1 reserves the names `cargo-stingy4rust`,
-`stingy4rust-core`, `stingy4rust-host` and `stingy4rust-board`; it measures
-nothing yet, and the subcommand exits with an error rather than pass a gate it
-does not check. The design is decided and the implementation is planned, slice
-by slice (below).
+**In development.** Version 0.1.0 is the host tool: the counting allocator,
+the profile target's `main`, the report, budgets with their tolerances, and the
+`cargo stingy4rust` subcommand. Microcontrollers come later --
+`stingy4rust-board` still only reserves its name. The design and the plan are
+below.
 
 ## What it will do
 

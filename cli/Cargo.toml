@@ -1,6 +1,6 @@
 [package]
 name = "cargo-stingy4rust"
-description = "A cargo subcommand that holds a Rust codebase to budgets of heap, peak heap, storage and wire bytes under fixed load profiles. In development: this release reserves the name."
+description = "A cargo subcommand that holds a Rust codebase to budgets of heap, peak heap, storage and wire bytes, measured under fixed load profiles: report, check, record."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

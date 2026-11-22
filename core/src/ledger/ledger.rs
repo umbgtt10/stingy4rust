@@ -11,6 +11,7 @@ use crate::figures::scope_name::ScopeName;
 use crate::figures::tally::Tally;
 use crate::ledger::bookkeeping::Bookkeeping;
 use crate::ledger::ledger_tables::LedgerTables;
+use crate::run::recorder::Recorder;
 
 // Every count of a run, in fixed tables behind a lock that needs no `std` and
 // no allocation, so a `static` allocator can hold it. It counts from `begin` to
@@ -52,16 +53,8 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Ledger<SCOPES
         self.tables.lock().tally(Self::ledger_bytes())
     }
 
-    pub fn enter(&self, scope: ScopeName) -> usize {
-        self.while_counting(|tables| tables.enter(scope))
-    }
-
     pub fn freed(&self, address: usize, size: usize, thread: usize) {
         self.while_counting(|tables| tables.freed(address, size, thread));
-    }
-
-    pub fn leave(&self, depth: usize) {
-        self.while_counting(|tables| tables.leave(depth));
     }
 
     pub fn reallocated(
@@ -101,4 +94,32 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Default
     fn default() -> Self {
         Self::new()
     }
+}
+
+// Scopes are counted; the wire, the stores and the operations are not yet --
+// their table comes with the meters that feed it.
+impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Recorder
+    for Ledger<SCOPES, BLOCKS, NAMES>
+{
+    fn at_rest(&self, _store: ScopeName, _bytes: u64) {}
+
+    fn begin_operation(&self, _name: &'static str) {}
+
+    fn end_operation(&self, _name: &'static str) {}
+
+    fn enter(&self, scope: ScopeName) -> usize {
+        self.while_counting(|tables| tables.enter(scope))
+    }
+
+    fn leave(&self, depth: usize) {
+        self.while_counting(|tables| tables.leave(depth));
+    }
+
+    fn on_disk(&self, _store: ScopeName, _bytes: u64) {}
+
+    fn sent(&self, _kind: &'static str, _bytes: u64) {}
+
+    fn transaction(&self, _store: ScopeName) {}
+
+    fn written(&self, _store: ScopeName, _bytes: u64) {}
 }

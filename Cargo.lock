@@ -175,6 +175,10 @@ dependencies = [
 [[package]]
 name = "stingy4rust-host"
 version = "0.0.1"
+dependencies = [
+ "stingy4rust-core",
+ "tempfile",
+]
 
 [[package]]
 name = "syn"
@@ -220,6 +224,10 @@ checksum = "a2c754d6c33795a1c324727428e5a7dedb5b06195f9890bdbcba760d3e246563"
 [[package]]
 name = "validation"
 version = "0.0.1"
+dependencies = [
+ "serde_json",
+ "tempfile",
+]
 
 [[package]]
 name = "windows-link"

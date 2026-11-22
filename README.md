@@ -20,7 +20,8 @@ by slice (below).
   decorator over a storage port, beside each store's size on disk.
 - **Wire**: the bytes of each kind of message, and the messages an operation
   costs, counted by a decorator over a transport port.
-- **Budgets**: one file a load profile, checked with a tolerance: a run fails on
+- **Budgets**: one file at the workspace root, keyed by target and profile,
+  checked with zero tolerance unless a figure is given one: a run fails on
   growth and admits a gain, and the budget is re-recorded deliberately, as a
   baseline is.
 - **Reports**: a table for a person, JSON for a gate.
@@ -28,6 +29,29 @@ by slice (below).
 The load profiles are the codebase's own: deterministic scenarios from a fixed
 seed, so every figure is reproducible. It is built first for a distributed
 protocol that runs on hosts and on microcontrollers, where every byte counts.
+
+A project keeps them in a test target of its own named `stingy`, with no
+harness, whose `main` installs the counting allocator and hands it the
+registry:
+
+```rust
+#[global_allocator]
+static STINGY: HostStingy = Stingy::new(System);
+
+static PROFILES: [Profile; 1] = [Profile { name: "idle", seed: 2026, body: idle }];
+
+fn idle(run: &Run) {
+    let _node = run.scope_numbered("node", 1);
+    // the project's own system, under a fixed load
+}
+
+fn main() -> ExitCode {
+    ProfileMain::new(&STINGY, &PROFILES, &ProcessEnvironment, &FileReportSink).run()
+}
+```
+
+Run with `STINGY4RUST_REPORT` naming a file, it runs each profile on one
+thread and writes every figure to it as JSON.
 
 ## Design
 

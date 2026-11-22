@@ -6,6 +6,7 @@ use stingy4rust::figures::heap_figures::HeapFigures;
 use stingy4rust::figures::scope_name::ScopeName;
 use stingy4rust::ledger::ledger::Ledger;
 use stingy4rust::ledger::run_status::RunStatus;
+use stingy4rust::run::recorder::Recorder;
 
 static SHARED: Ledger<4, 8, 4> = Ledger::new();
 const THREAD: usize = 1;

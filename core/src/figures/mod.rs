@@ -2,6 +2,8 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
+pub mod figure;
+pub mod flat_figures;
 pub mod heap_figures;
 pub mod operation_figures;
 pub mod scope_figures;

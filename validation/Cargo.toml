@@ -14,6 +14,20 @@ license.workspace = true
 description = "End-to-end validation of the cargo-stingy4rust binary against the fixture projects"
 publish = false
 
+autotests = false
+
+[lib]
+name = "validation"
+path = "src/lib.rs"
+
+[[test]]
+name = "all_tests"
+path = "tests/all_tests.rs"
+
+[dependencies]
+serde_json = { workspace = true }
+tempfile = { workspace = true }
+
 # No `unsafe` in any target, tests included.
 [lints.rust]
 unsafe_code = "forbid"

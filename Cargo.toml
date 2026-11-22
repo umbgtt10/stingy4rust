@@ -1,8 +1,8 @@
 [workspace]
 resolver = "2"
-members = ["core", "cli"]
+members = ["core", "cli", "host"]
 
-# One version for every member: the two published crates release together.
+# One version for every member: the published crates release together.
 [workspace.package]
 version = "0.0.1"
 edition = "2024"

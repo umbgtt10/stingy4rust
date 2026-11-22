@@ -243,11 +243,14 @@ that do nothing yet.
 | `dry4rust-baseline.json` | record it once the crates exist: `cargo dry4rust --path . --min-nodes 25 --baseline "$PWD/dry4rust-baseline.json" baseline` -- it should hold no group |
 | `CHANGELOG.md` | dry4rust's preamble, an `Unreleased` section |
 
-**Create**: `host/` (`stingy4rust-host`, `lib.rs` with `#![deny(unsafe_code)]`,
-nothing else yet), `validation/` (`publish = false`), `fixture/Cargo.toml` (a
-workspace of its own, no members yet), and add `host` and `validation` to the
-root workspace, `fixture` to `exclude`. Every new `.rs` file carries the
-header. Each crate takes the family's `[lints]` tables as dry4rust's do.
+**Already there**: `host/`, the placeholder that reserved `stingy4rust-host`
+(`lib.rs` with `#![deny(unsafe_code)]`, nothing else yet), in the root
+workspace.
+
+**Create**: `validation/` (`publish = false`), `fixture/Cargo.toml` (a
+workspace of its own, no members yet), and add `validation` to the root
+workspace, `fixture` to `exclude`. Every new `.rs` file carries the header.
+Each crate takes the family's `[lints]` tables as dry4rust's do.
 
 **Tests first**: the xtask's tests come with it from dry4rust; adapt their
 expectations to the new gate list and the unsafe-confinement rule, and add one:
@@ -577,8 +580,8 @@ these answers.
 
 Only at the owner's word. When asked:
 
-1. Reserve any new crate name first (`stingy4rust-host`, later
-   `stingy4rust-board`) -- the owner reserves names.
+1. Reserve any new crate name first (`stingy4rust-board`;
+   `stingy4rust-host` is reserved, 0.0.1) -- the owner reserves names.
 2. Bump `[workspace.package] version` once, for every published crate; move
    `CHANGELOG.md`'s `Unreleased` under the version, dated.
 3. `cargo package --workspace`, which builds every crate as it would be

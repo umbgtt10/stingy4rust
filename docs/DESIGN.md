@@ -605,8 +605,9 @@ confirmed all four.
 
 1. **A third published crate, `stingy4rust-host`**, holds the host's
    `GlobalAlloc` and with it the only `unsafe` code; `stingy4rust-board`
-   replaces it in slice 6. Both names are reserved by the owner before the
-   first release that needs them. (ADR-TechnologyFreeSafeCore)
+   replaces it in slice 6. `stingy4rust-host` was reserved on 2026-11-22, at
+   0.0.1; the owner reserves `stingy4rust-board` before slice 6.
+   (ADR-TechnologyFreeSafeCore)
 2. **The profile target is a test named `stingy`** with `harness = false`,
    driven by `STINGY4RUST_REPORT` and `STINGY4RUST_PROFILE`.
    (ADR-TheProfileTargetIsATestWithoutHarness)

@@ -1,7 +1,8 @@
 # stingy4rust -- the design
 
 **Status:** decided, 2026-11-21. The owner settled the five questions the
-proposal of 2026-11-20 left open (section 13); everything else below is the
+proposal of 2026-11-20 left open (section 13), and on 2026-11-22 confirmed the
+calls the design made beyond them (section 14); everything else below is the
 design as it is to be built. How it is built, slice by slice, is
 [`IMPLEMENTATION-PLAN.md`](IMPLEMENTATION-PLAN.md); why each load-bearing
 choice was made is in [`ADRs/`](ADRs/README.md).
@@ -596,3 +597,20 @@ four, the fifth was settled with it.
    machine. (ADR-TimeIsNotMeasured)
 5. **One budget file at the root**, `stingy4rust-budget.json`, as the family's
    baselines are one file at the root. (ADR-OneBudgetFileAtTheRoot)
+
+## 14. Confirmed 2026-11-22
+
+The design made four calls of its own beyond those questions; the owner
+confirmed all four.
+
+1. **A third published crate, `stingy4rust-host`**, holds the host's
+   `GlobalAlloc` and with it the only `unsafe` code; `stingy4rust-board`
+   replaces it in slice 6. Both names are reserved by the owner before the
+   first release that needs them. (ADR-TechnologyFreeSafeCore)
+2. **The profile target is a test named `stingy`** with `harness = false`,
+   driven by `STINGY4RUST_REPORT` and `STINGY4RUST_PROFILE`.
+   (ADR-TheProfileTargetIsATestWithoutHarness)
+3. **The first release is 0.1.0, after slice 4**: the host tool complete.
+4. **The fixture's figures depend on the compiler**: they assume a `Vec<u8>`
+   grows 8, 16, 32, 64, 128. A figure that differs is explained, never
+   matched; if the toolchain genuinely grows otherwise, the owner decides.

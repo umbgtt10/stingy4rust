@@ -589,7 +589,8 @@ Only at the owner's word. When asked:
 4. The README's "In development" goes only when the owner says the tool is
    ready to recommend.
 
-The proposed first release is **0.1.0 after slice 4**: the host tool complete.
+The first release is **0.1.0 after slice 4**: the host tool complete
+(confirmed by the owner, 2026-11-22).
 
 ## 13. How to ask
 

@@ -156,12 +156,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "spin"
+version = "0.12.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0134f9043ed38b087ac4f7d4af44c79e2c9e5094421fe3164f435ce585953b10"
+
+[[package]]
 name = "stingy4rust-board"
 version = "0.0.1"
 
 [[package]]
 name = "stingy4rust-core"
 version = "0.0.1"
+dependencies = [
+ "spin",
+]
 
 [[package]]
 name = "stingy4rust-host"

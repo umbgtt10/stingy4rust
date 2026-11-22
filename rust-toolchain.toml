@@ -4,3 +4,5 @@
 [toolchain]
 channel = "1.99.1"
 components = ["rustfmt", "clippy", "llvm-tools"]
+# The core is `no_std` for microcontrollers; stage 1 checks it for one.
+targets = ["thumbv7em-none-eabihf"]

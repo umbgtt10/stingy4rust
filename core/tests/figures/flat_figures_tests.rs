@@ -5,9 +5,12 @@
 use stingy4rust::figures::figure::Figure;
 use stingy4rust::figures::flat_figures::FlatFigures;
 use stingy4rust::figures::heap_figures::HeapFigures;
+use stingy4rust::figures::operation_figures::OperationFigures;
 use stingy4rust::figures::scope_figures::ScopeFigures;
 use stingy4rust::figures::scope_name::ScopeName;
+use stingy4rust::figures::store_figures::StoreFigures;
 use stingy4rust::figures::tally::Tally;
+use stingy4rust::figures::wire_figures::WireFigures;
 use stingy4rust::ledger::bookkeeping::Bookkeeping;
 use stingy4rust::ledger::run_status::RunStatus;
 
@@ -75,6 +78,31 @@ fn of_a_numbered_scope_writes_its_number_in_the_path() {
 }
 
 #[test]
+fn of_a_store_without_a_disk_writes_no_bytes_on_disk() {
+    // Arrange
+    let mut tally = tally(RunStatus::Measured, Vec::new());
+    tally.storage = vec![StoreFigures {
+        store: ScopeName {
+            name: "memory",
+            number: None,
+        },
+        bytes_written: 8,
+        writes: 1,
+        transactions: 0,
+        bytes_at_rest: 8,
+        bytes_on_disk: None,
+    }];
+
+    // Act
+    let figures = FlatFigures::of(&tally);
+
+    // Assert
+    let paths: Vec<&str> = figures.iter().map(|figure| figure.path.as_str()).collect();
+    assert!(paths.contains(&"storage.memory.bytes_at_rest"));
+    assert!(!paths.contains(&"storage.memory.bytes_on_disk"));
+}
+
+#[test]
 fn of_a_tally_lists_heap_peaks_then_each_scope_s_figures_in_order() {
     // Arrange
     let worker = HeapFigures {
@@ -121,6 +149,54 @@ fn of_a_tally_lists_heap_peaks_then_each_scope_s_figures_in_order() {
             figure("scopes.worker.peak", 192),
             figure("scopes.worker.largest_entry_rise", 192),
             figure("scopes.worker.entries", 1),
+        ]
+    );
+}
+
+#[test]
+fn of_a_tally_lists_storage_wire_then_operations_after_the_scopes() {
+    // Arrange
+    let mut tally = tally(RunStatus::Measured, Vec::new());
+    tally.storage = vec![StoreFigures {
+        store: ScopeName {
+            name: "log",
+            number: Some(1),
+        },
+        bytes_written: 150,
+        writes: 3,
+        transactions: 2,
+        bytes_at_rest: 150,
+        bytes_on_disk: Some(4096),
+    }];
+    tally.wire = vec![WireFigures {
+        kind: "ping",
+        messages: 2,
+        bytes: 20,
+    }];
+    tally.operations = vec![OperationFigures {
+        name: "exchange",
+        count: 2,
+        messages: 4,
+        bytes: 220,
+    }];
+
+    // Act
+    let figures = FlatFigures::of(&tally);
+
+    // Assert
+    assert_eq!(
+        figures[6..].to_vec(),
+        vec![
+            figure("storage.log 1.bytes_written", 150),
+            figure("storage.log 1.writes", 3),
+            figure("storage.log 1.transactions", 2),
+            figure("storage.log 1.bytes_at_rest", 150),
+            figure("storage.log 1.bytes_on_disk", 4096),
+            figure("wire.ping.messages", 2),
+            figure("wire.ping.bytes", 20),
+            figure("operations.exchange.count", 2),
+            figure("operations.exchange.messages", 4),
+            figure("operations.exchange.bytes", 220),
         ]
     );
 }

@@ -30,6 +30,7 @@ fn of_the_measured_fixture_exits_0_with_every_profile_reported() {
         "nested",
         "growing",
         "outside",
+        "wire-and-storage",
     ] {
         assert!(
             run.figure(profile, "heap.allocations").is_some(),

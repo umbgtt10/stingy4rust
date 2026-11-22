@@ -74,6 +74,9 @@ cargo stingy4rust record [--package P] [--profile NAME] [--target T] [--budget P
 The package is the one with a test target named `stingy`, or the one
 `--package` names; the target is the host's unless `--target` names one.
 
+A profile meters its transport and its storage through one thin decorator
+over each port: [`docs/DECORATORS.md`](docs/DECORATORS.md).
+
 | exit code | means |
 |---|---|
 | 0 | within budget -- gains included, with a hint to record them |

@@ -118,6 +118,32 @@ fn run_of_three_blocks_reports_192_bytes_in_the_worker_scope() {
 }
 
 #[test]
+fn run_of_wire_and_storage_reports_the_documented_figures() {
+    // Arrange & Act
+    let run = FixtureRunScenario::run();
+
+    // Assert
+    assert_figures(
+        run,
+        "wire-and-storage",
+        &[
+            ("wire.ping.messages", 2),
+            ("wire.ping.bytes", 20),
+            ("wire.pong.messages", 2),
+            ("wire.pong.bytes", 200),
+            ("operations.exchange.count", 2),
+            ("operations.exchange.messages", 4),
+            ("operations.exchange.bytes", 220),
+            ("storage.journal.bytes_written", 150),
+            ("storage.journal.writes", 3),
+            ("storage.journal.transactions", 2),
+            ("storage.journal.bytes_at_rest", 150),
+            ("storage.journal.bytes_on_disk", 4096),
+        ],
+    );
+}
+
+#[test]
 fn run_twice_writes_the_same_report() {
     // Arrange & Act
     let reports = FixtureRunScenario::run_twice();

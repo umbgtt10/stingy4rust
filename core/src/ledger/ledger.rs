@@ -96,16 +96,20 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Default
     }
 }
 
-// Scopes are counted; the wire, the stores and the operations are not yet --
-// their table comes with the meters that feed it.
 impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Recorder
     for Ledger<SCOPES, BLOCKS, NAMES>
 {
-    fn at_rest(&self, _store: ScopeName, _bytes: u64) {}
+    fn at_rest(&self, store: ScopeName, bytes: u64) {
+        self.while_counting(|tables| tables.at_rest(store, bytes));
+    }
 
-    fn begin_operation(&self, _name: &'static str) {}
+    fn begin_operation(&self, name: &'static str) {
+        self.while_counting(|tables| tables.begin_operation(name));
+    }
 
-    fn end_operation(&self, _name: &'static str) {}
+    fn end_operation(&self, name: &'static str) {
+        self.while_counting(|tables| tables.end_operation(name));
+    }
 
     fn enter(&self, scope: ScopeName) -> usize {
         self.while_counting(|tables| tables.enter(scope))
@@ -115,11 +119,19 @@ impl<const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> Recorder
         self.while_counting(|tables| tables.leave(depth));
     }
 
-    fn on_disk(&self, _store: ScopeName, _bytes: u64) {}
+    fn on_disk(&self, store: ScopeName, bytes: u64) {
+        self.while_counting(|tables| tables.on_disk(store, bytes));
+    }
 
-    fn sent(&self, _kind: &'static str, _bytes: u64) {}
+    fn sent(&self, kind: &'static str, bytes: u64) {
+        self.while_counting(|tables| tables.sent(kind, bytes));
+    }
 
-    fn transaction(&self, _store: ScopeName) {}
+    fn transaction(&self, store: ScopeName) {
+        self.while_counting(|tables| tables.transaction(store));
+    }
 
-    fn written(&self, _store: ScopeName, _bytes: u64) {}
+    fn written(&self, store: ScopeName, bytes: u64) {
+        self.while_counting(|tables| tables.written(store, bytes));
+    }
 }

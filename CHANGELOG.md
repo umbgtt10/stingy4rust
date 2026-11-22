@@ -30,6 +30,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Budgets (`stingy4rust::budget`): a run's figures compared with a target's
   budget -- within, a gain, over, unbudgeted or missing -- with zero tolerance
   unless a figure carries one, and recorded as it.
+- The wire, storage and operations: `WireMeter::sent`, `StorageMeter`'s
+  `written`, `transaction`, `at_rest` and `on_disk`, and `Run::operation`,
+  counted in the ledger's table of names -- kinds, stores and operations
+  together, bounded by `NAMES` -- and reported as `wire.<kind>.*`,
+  `storage.<store>.*` and `operations.<name>.*`. `docs/DECORATORS.md` shows
+  how a project meters its ports with one decorator each.
 - `cargo stingy4rust report|check|record`: finds the package whose `stingy`
   test target holds the profiles, runs it in release, and prints a table or
   JSON; exits 0 within budget, 1 over it, 2 unable to measure. The budget file

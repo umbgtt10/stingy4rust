@@ -174,3 +174,42 @@ fn reallocated_after_end_is_not_counted() {
     assert_eq!(heap.reallocations, 0);
     assert_eq!(heap.allocations, 1);
 }
+
+#[test]
+fn sent_before_begin_is_not_counted() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.sent("ping", 10);
+    ledger.begin(THREAD);
+
+    // Act
+    ledger.sent("pong", 100);
+
+    // Assert
+    let wire = ledger.end().wire;
+    assert_eq!(wire.len(), 1);
+    assert_eq!(wire[0].kind, "pong");
+}
+
+#[test]
+fn written_during_a_run_reaches_the_tally_with_the_operations() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    ledger.begin_operation("flush");
+
+    // Act
+    ledger.written(worker(), 50);
+    ledger.transaction(worker());
+    ledger.at_rest(worker(), 50);
+    ledger.on_disk(worker(), 4096);
+    ledger.end_operation("flush");
+
+    // Assert
+    let tally = ledger.end();
+    assert_eq!(tally.storage[0].bytes_written, 50);
+    assert_eq!(tally.storage[0].transactions, 1);
+    assert_eq!(tally.storage[0].bytes_at_rest, 50);
+    assert_eq!(tally.storage[0].bytes_on_disk, Some(4096));
+    assert_eq!(tally.operations[0].count, 1);
+}

@@ -4,12 +4,12 @@
 
 use crate::support::fake_command_runner::FakeCommandRunner;
 use crate::support::fake_file_store::FakeFileStore;
-use crate::support::sample::BUDGET_PATH;
-use crate::support::sample::REPORT_PATH;
 use crate::support::sample::RUSTC;
 use crate::support::sample::budget;
+use crate::support::sample::budget_path;
 use crate::support::sample::metadata;
 use crate::support::sample::report;
+use crate::support::sample::report_path;
 use stingy4rust_cli::command_line::action::Action;
 use stingy4rust_cli::command_line::command::Command;
 use stingy4rust_cli::command_line::output_format::OutputFormat;
@@ -37,13 +37,13 @@ fn runner<'a>(
         .answering("cargo metadata", Some(0), metadata_text)
         .answering("rustc -vV", Some(0), RUSTC)
         .answering("cargo test", Some(test_code), "")
-        .writing_report(store, REPORT_PATH, &report(status, 3))
+        .writing_report(store, &report_path(), &report(status, 3))
 }
 
 #[test]
 fn run_of_check_in_json_prints_one_document() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, &budget(3));
+    let store = FakeFileStore::new().with(&budget_path(), &budget(3));
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 
@@ -59,7 +59,7 @@ fn run_of_check_in_json_prints_one_document() {
 #[test]
 fn run_of_check_over_budget_exits_1() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, &budget(2));
+    let store = FakeFileStore::new().with(&budget_path(), &budget(2));
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 
@@ -82,7 +82,7 @@ fn run_of_check_over_budget_exits_1() {
 #[test]
 fn run_of_check_whose_run_failed_exits_2() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, &budget(3));
+    let store = FakeFileStore::new().with(&budget_path(), &budget(3));
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "blocks-exhausted", 101, &text);
 
@@ -102,7 +102,7 @@ fn run_of_check_whose_run_failed_exits_2() {
 #[test]
 fn run_of_check_with_a_budget_that_cannot_be_read_exits_2() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, "not json");
+    let store = FakeFileStore::new().with(&budget_path(), "not json");
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 
@@ -113,9 +113,10 @@ fn run_of_check_with_a_budget_that_cannot_be_read_exits_2() {
     // Assert
     assert_eq!(outcome.exit_code, 2);
     assert!(
-        outcome
-            .stderr
-            .starts_with("stingy4rust: the budget /w/stingy4rust-budget.json could not be read: "),
+        outcome.stderr.starts_with(&format!(
+            "stingy4rust: the budget {} could not be read: ",
+            budget_path()
+        )),
         "{}",
         outcome.stderr
     );
@@ -146,7 +147,7 @@ fn run_of_check_with_an_unbudgeted_figure_exits_1() {
 #[test]
 fn run_of_check_within_budget_exits_0() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, &budget(3));
+    let store = FakeFileStore::new().with(&budget_path(), &budget(3));
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 
@@ -181,14 +182,17 @@ fn run_of_record_with_a_budget_that_cannot_be_written_exits_2() {
     assert_eq!(outcome.exit_code, 2);
     assert_eq!(
         outcome.stderr,
-        "stingy4rust: the budget /w/stingy4rust-budget.json could not be written: refused by the fake\n"
+        format!(
+            "stingy4rust: the budget {} could not be written: refused by the fake\n",
+            budget_path()
+        )
     );
 }
 
 #[test]
 fn run_of_record_writes_the_budget_and_exits_0() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, &budget(5));
+    let store = FakeFileStore::new().with(&budget_path(), &budget(5));
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 
@@ -198,14 +202,14 @@ fn run_of_record_writes_the_budget_and_exits_0() {
 
     // Assert
     assert_eq!(outcome.exit_code, 0);
-    let written = store.file(BUDGET_PATH).expect("the budget is written");
-    let expected = BudgetFile::read(BUDGET_PATH, &budget(3)).expect("a budget");
-    assert_eq!(BudgetFile::read(BUDGET_PATH, &written), Ok(expected));
+    let written = store.file(&budget_path()).expect("the budget is written");
+    let expected = BudgetFile::read(&budget_path(), &budget(3)).expect("a budget");
+    assert_eq!(BudgetFile::read(&budget_path(), &written), Ok(expected));
     assert!(outcome.stdout.contains("-2  gain"), "{}", outcome.stdout);
     assert!(
         outcome
             .stdout
-            .ends_with("recorded /w/stingy4rust-budget.json\n"),
+            .ends_with(&format!("recorded {}\n", budget_path())),
         "{}",
         outcome.stdout
     );
@@ -230,7 +234,7 @@ fn run_of_report_in_json_prints_the_report_as_written() {
 #[test]
 fn run_of_report_reads_no_budget() {
     // Arrange
-    let store = FakeFileStore::new().with(BUDGET_PATH, "not json");
+    let store = FakeFileStore::new().with(&budget_path(), "not json");
     let text = metadata(&[("measured", true)]);
     let runner = runner(&store, "measured", 0, &text);
 

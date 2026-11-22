@@ -47,3 +47,29 @@ fn enter_out_of_a_run_opens_no_scope() {
     assert_eq!(tally.scopes.len(), 2);
     assert_eq!(tally.scopes[1].entries, 1);
 }
+
+#[test]
+fn sent_and_the_store_s_calls_reach_the_tally() {
+    // Arrange
+    static STINGY: Stingy<System, 4, 8, 4> = Stingy::new(System);
+    STINGY.begin();
+    STINGY.begin_operation("exchange");
+
+    // Act
+    STINGY.sent("ping", 10);
+    STINGY.end_operation("exchange");
+    STINGY.written(WORKER, 50);
+    STINGY.transaction(WORKER);
+    STINGY.at_rest(WORKER, 50);
+    STINGY.on_disk(WORKER, 4096);
+
+    // Assert
+    let tally = STINGY.end();
+    assert_eq!(tally.wire[0].bytes, 10);
+    assert_eq!(tally.operations[0].count, 1);
+    assert_eq!(tally.operations[0].bytes, 10);
+    assert_eq!(tally.storage[0].bytes_written, 50);
+    assert_eq!(tally.storage[0].transactions, 1);
+    assert_eq!(tally.storage[0].bytes_at_rest, 50);
+    assert_eq!(tally.storage[0].bytes_on_disk, Some(4096));
+}

@@ -140,6 +140,36 @@
           "scopes.worker.peak": 192,
           "scopes.worker.reallocations": 0
         }
+      },
+      "wire-and-storage": {
+        "figures": {
+          "heap.allocations": 0,
+          "heap.bytes_allocated": 0,
+          "heap.bytes_freed": 0,
+          "heap.live_at_end": 0,
+          "heap.reallocations": 0,
+          "operations.exchange.bytes": 220,
+          "operations.exchange.count": 2,
+          "operations.exchange.messages": 4,
+          "peaks.run": 0,
+          "scopes.(outside scopes).allocations": 0,
+          "scopes.(outside scopes).bytes_allocated": 0,
+          "scopes.(outside scopes).bytes_freed": 0,
+          "scopes.(outside scopes).entries": 0,
+          "scopes.(outside scopes).largest_entry_rise": 0,
+          "scopes.(outside scopes).live_at_end": 0,
+          "scopes.(outside scopes).peak": 0,
+          "scopes.(outside scopes).reallocations": 0,
+          "storage.journal.bytes_at_rest": 150,
+          "storage.journal.bytes_on_disk": 4096,
+          "storage.journal.bytes_written": 150,
+          "storage.journal.transactions": 2,
+          "storage.journal.writes": 3,
+          "wire.ping.bytes": 20,
+          "wire.ping.messages": 2,
+          "wire.pong.bytes": 200,
+          "wire.pong.messages": 2
+        }
       }
     },
     "x86_64-pc-windows-msvc": {
@@ -280,6 +310,36 @@
           "scopes.worker.peak": 192,
           "scopes.worker.reallocations": 0
         }
+      },
+      "wire-and-storage": {
+        "figures": {
+          "heap.allocations": 0,
+          "heap.bytes_allocated": 0,
+          "heap.bytes_freed": 0,
+          "heap.live_at_end": 0,
+          "heap.reallocations": 0,
+          "operations.exchange.bytes": 220,
+          "operations.exchange.count": 2,
+          "operations.exchange.messages": 4,
+          "peaks.run": 0,
+          "scopes.(outside scopes).allocations": 0,
+          "scopes.(outside scopes).bytes_allocated": 0,
+          "scopes.(outside scopes).bytes_freed": 0,
+          "scopes.(outside scopes).entries": 0,
+          "scopes.(outside scopes).largest_entry_rise": 0,
+          "scopes.(outside scopes).live_at_end": 0,
+          "scopes.(outside scopes).peak": 0,
+          "scopes.(outside scopes).reallocations": 0,
+          "storage.journal.bytes_at_rest": 150,
+          "storage.journal.bytes_on_disk": 4096,
+          "storage.journal.bytes_written": 150,
+          "storage.journal.transactions": 2,
+          "storage.journal.writes": 3,
+          "wire.ping.bytes": 20,
+          "wire.ping.messages": 2,
+          "wire.pong.bytes": 200,
+          "wire.pong.messages": 2
+        }
       }
     },
     "x86_64-unknown-linux-gnu": {
@@ -419,6 +479,36 @@
           "scopes.worker.live_at_end": 0,
           "scopes.worker.peak": 192,
           "scopes.worker.reallocations": 0
+        }
+      },
+      "wire-and-storage": {
+        "figures": {
+          "heap.allocations": 0,
+          "heap.bytes_allocated": 0,
+          "heap.bytes_freed": 0,
+          "heap.live_at_end": 0,
+          "heap.reallocations": 0,
+          "operations.exchange.bytes": 220,
+          "operations.exchange.count": 2,
+          "operations.exchange.messages": 4,
+          "peaks.run": 0,
+          "scopes.(outside scopes).allocations": 0,
+          "scopes.(outside scopes).bytes_allocated": 0,
+          "scopes.(outside scopes).bytes_freed": 0,
+          "scopes.(outside scopes).entries": 0,
+          "scopes.(outside scopes).largest_entry_rise": 0,
+          "scopes.(outside scopes).live_at_end": 0,
+          "scopes.(outside scopes).peak": 0,
+          "scopes.(outside scopes).reallocations": 0,
+          "storage.journal.bytes_at_rest": 150,
+          "storage.journal.bytes_on_disk": 4096,
+          "storage.journal.bytes_written": 150,
+          "storage.journal.transactions": 2,
+          "storage.journal.writes": 3,
+          "wire.ping.bytes": 20,
+          "wire.ping.messages": 2,
+          "wire.pong.bytes": 200,
+          "wire.pong.messages": 2
         }
       }
     }

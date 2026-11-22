@@ -9,3 +9,5 @@ pub mod package_dependencies;
 pub mod source_files;
 pub mod source_read_failure;
 pub mod technology_use_collector;
+pub mod unsafe_rule;
+pub mod unsafe_use_collector;

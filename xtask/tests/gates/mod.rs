@@ -15,3 +15,4 @@ pub mod stage_failure_tests;
 pub mod stern_gate_tests;
 pub mod support;
 pub mod twin_gate_tests;
+pub mod unsafe_gate_tests;

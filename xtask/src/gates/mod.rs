@@ -15,3 +15,4 @@ pub mod stage2;
 pub mod stage_failure;
 pub mod stern_gate;
 pub mod twin_gate;
+pub mod unsafe_gate;

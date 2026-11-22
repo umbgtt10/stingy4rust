@@ -15,6 +15,7 @@ use xtask::boundary::boundary_rule::BoundaryRule;
 use xtask::boundary::crate_root_attributes::CrateRootAttributes;
 use xtask::boundary::disk_source_files::DiskSourceFiles;
 use xtask::boundary::package_dependencies::PackageDependencies;
+use xtask::boundary::unsafe_rule::UnsafeRule;
 use xtask::gates::boundary_gate::BoundaryGate;
 use xtask::gates::cargo_update_gate::CargoUpdateGate;
 use xtask::gates::crap_gate::CrapGate;
@@ -26,6 +27,7 @@ use xtask::gates::shear_gate::ShearGate;
 use xtask::gates::stage2::Stage2;
 use xtask::gates::stern_gate::SternGate;
 use xtask::gates::twin_gate::TwinGate;
+use xtask::gates::unsafe_gate::UnsafeGate;
 use xtask::process::system_command_runner::SystemCommandRunner;
 use xtask::reports::crap_report_parser::CrapReportParser;
 use xtask::reports::scores::core_scorer::CoreScorer;
@@ -54,6 +56,18 @@ const FORBIDDEN_METHODS: [&str; 10] = [
     "read_link",
     "symlink_metadata",
     "try_exists",
+];
+const MEMBER_DIRS: [&[&str]; 6] = [
+    &["board"],
+    &["cli"],
+    &["core"],
+    &["host"],
+    &["validation"],
+    &["xtask"],
+];
+const UNSAFE_ALLOWED: [&[&str]; 2] = [
+    &["board", "src", "board_stingy.rs"],
+    &["host", "src", "stingy.rs"],
 ];
 const CRAP_THRESHOLD: &str = "15";
 const ICEBERG_THRESHOLD: &str = "10";
@@ -160,6 +174,20 @@ fn run_stage2() -> ExitCode {
         },
     );
 
+    // Then, and as cheaply: `unsafe` nowhere in the workspace but the
+    // allocators' own files. The compiler's lints deny it everywhere else
+    // already; this is what keeps a file-level allow from moving it.
+    let confined = UnsafeGate::new(
+        &sources,
+        UnsafeRule {
+            source_dirs: MEMBER_DIRS.iter().map(|dir| below(&root, dir)).collect(),
+            allowed_files: UNSAFE_ALLOWED
+                .iter()
+                .map(|file| below(&root, file))
+                .collect(),
+        },
+    );
+
     // Second, and with no --package at all: one call judges every member
     // against every rule, and stern4rust.toml names the header rather than this
     // call, so a hand-run of `cargo stern4rust` from the repository root sees
@@ -231,7 +259,7 @@ fn run_stage2() -> ExitCode {
     );
 
     let gates: Vec<&dyn Gate> = vec![
-        &boundary, &stern, &shear, &dry, &crap, &twin, &iceberg, &deny,
+        &boundary, &confined, &stern, &shear, &dry, &crap, &twin, &iceberg, &deny,
     ];
 
     match Stage2::new(gates).run() {

@@ -62,7 +62,8 @@ code, each gate a `Gate` over a `CommandRunner`. In this order:
 
 | gate | asks |
 |---|---|
-| technology-free core | does `core` name only `spin`, carry `#![no_std]` and `#![forbid(unsafe_code)]`, reach no `std`; is `unsafe` confined to `host/src/stingy.rs` (and `board/src/board_stingy.rs`) |
+| technology-free core | does `core` name only `spin`, carry `#![no_std]` and `#![forbid(unsafe_code)]`, reach no `std` |
+| unsafe confined | is `unsafe` -- a block, a fn, an impl, a trait, an extern block, an attribute -- nowhere but `host/src/stingy.rs` and `board/src/board_stingy.rs` |
 | `cargo stern4rust` | do the house coding rules hold |
 | `cargo shear` | is every declared dependency used, in the section that uses it |
 | `cargo dry4rust` | did this change add duplicated code (floor 25, zero ceilings against `dry4rust-baseline.json`) |

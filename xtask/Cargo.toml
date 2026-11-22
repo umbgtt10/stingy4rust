@@ -1,0 +1,44 @@
+[package]
+name = "xtask"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "Gate orchestration for the stingy4rust workspace"
+publish = false
+
+autotests = false
+
+[lib]
+name = "xtask"
+path = "src/lib.rs"
+
+[[bin]]
+name = "xtask"
+path = "src/main.rs"
+
+[[test]]
+name = "all_tests"
+path = "tests/all_tests.rs"
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+syn = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+# No `unsafe` in any target, tests included.
+[lints.rust]
+unsafe_code = "forbid"
+
+# The same configuration core carries. The crate that runs the gates is held to
+# the bar it enforces, rather than being the one package in the workspace that
+# is measured more loosely than the code it measures.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+doc_markdown = "allow"

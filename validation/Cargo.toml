@@ -1,0 +1,30 @@
+# End-to-end validation of the cargo-stingy4rust binary.
+#
+# These tests drive the built subcommand against the projects in fixture/ and
+# assert on what it prints, writes and exits with. Their subject is a scenario
+# rather than any one source file, which is why they live here. A workspace
+# member, so `cargo test` at the root runs them and the house rules judge them;
+# publish = false keeps the fixture out of every published crate.
+[package]
+name = "validation"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+description = "End-to-end validation of the cargo-stingy4rust binary against the fixture projects"
+publish = false
+
+# No `unsafe` in any target, tests included.
+[lints.rust]
+unsafe_code = "forbid"
+
+# The family's configuration: pedantic and nursery at warn, which stage 1's
+# -D warnings turns into errors.
+[lints.clippy]
+pedantic = { level = "warn", priority = -1 }
+nursery = { level = "warn", priority = -1 }
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
+doc_markdown = "allow"
+too_long_first_doc_paragraph = "allow"
+module_name_repetitions = "allow"

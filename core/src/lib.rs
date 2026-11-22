@@ -6,3 +6,4 @@
 //! reserves the name and carries no API yet.
 
 #![no_std]
+#![forbid(unsafe_code)]

@@ -1,6 +1,12 @@
 [workspace]
 resolver = "2"
-members = ["core", "cli", "host", "board"]
+members = ["core", "cli", "host", "board", "validation", "xtask"]
+
+# The fixture is a workspace of its own: the projects the subcommand is run on,
+# each with its own profile target. Excluded rather than made members, so a
+# deliberately broken fixture never has to satisfy this workspace's build, and
+# so `cargo package` never ships a corpus its tests could not run.
+exclude = ["fixture"]
 
 # One version for every member: the published crates release together.
 [workspace.package]
@@ -9,3 +15,12 @@ edition = "2024"
 rust-version = "1.91"
 license = "MIT"
 repository = "https://github.com/umbgtt10/stingy4rust"
+authors = ["Umberto Gotti <umberto.gotti@umbertogotti.dev>"]
+
+# Declared once here; every member takes them with `.workspace = true`, so a
+# version is bumped in one place and no two members can disagree.
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+syn = { version = "2", features = ["full", "visit"] }
+tempfile = "3"

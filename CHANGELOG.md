@@ -9,6 +9,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-22
+
+The host tool: a project's load profiles run under a counting allocator, their
+heap, peaks, storage and wire figures reported, held to a budget and recorded
+as one, from `cargo stingy4rust`. Microcontrollers come later; the board crate
+still only reserves its name.
+
 ### Added
 
 - The ledger (`stingy4rust::ledger`): a run's heap counted by scope in fixed

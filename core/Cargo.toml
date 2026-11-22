@@ -1,6 +1,6 @@
 [package]
 name = "stingy4rust-core"
-description = "The measuring behind cargo-stingy4rust: a Rust codebase's heap, peak heap, storage and wire bytes under fixed load profiles. In development: this release reserves the name."
+description = "The measuring behind cargo-stingy4rust: a Rust codebase's heap, peak heap, storage and wire bytes, counted by scope under fixed load profiles without allocating, and held to a budget. no_std."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

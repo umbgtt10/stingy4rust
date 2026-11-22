@@ -4,8 +4,8 @@
 
 use crate::support::fake_command_runner::FakeCommandRunner;
 use crate::support::fake_file_store::FakeFileStore;
-use crate::support::sample::REPORT_PATH;
 use crate::support::sample::report;
+use crate::support::sample::report_path;
 use stingy4rust_cli::ports::invocation::Invocation;
 use stingy4rust_cli::profiles::profile_runner::ProfileRunner;
 use stingy4rust_cli::profiles::profile_target::ProfileTarget;
@@ -57,7 +57,7 @@ fn measure_of_a_run_not_measured_is_unable_naming_its_status() {
     let store = FakeFileStore::new();
     let runner = FakeCommandRunner::new()
         .answering("cargo test", Some(101), "")
-        .writing_report(&store, REPORT_PATH, &report("foreign-thread", 3));
+        .writing_report(&store, &report_path(), &report("foreign-thread", 3));
 
     // Act
     let measured = ProfileRunner::new(&runner, &store).measure(&target(), None, None);
@@ -75,7 +75,7 @@ fn measure_of_a_run_not_measured_is_unable_naming_its_status() {
 #[test]
 fn measure_removes_a_report_left_by_an_earlier_run() {
     // Arrange
-    let store = FakeFileStore::new().with(REPORT_PATH, &report("measured", 3));
+    let store = FakeFileStore::new().with(&report_path(), &report("measured", 3));
     let runner = FakeCommandRunner::new().answering("cargo test", Some(101), "");
 
     // Act
@@ -86,7 +86,7 @@ fn measure_removes_a_report_left_by_an_earlier_run() {
         matches!(measured, Err(Unable::Failed { .. })),
         "{measured:?}"
     );
-    assert_eq!(store.file(REPORT_PATH), None);
+    assert_eq!(store.file(&report_path()), None);
 }
 
 #[test]
@@ -96,7 +96,7 @@ fn measure_runs_cargo_test_in_release_with_the_report_path() {
     let text = report("measured", 3);
     let runner = FakeCommandRunner::new()
         .answering("cargo test", Some(0), "")
-        .writing_report(&store, REPORT_PATH, &text);
+        .writing_report(&store, &report_path(), &text);
 
     // Act
     let measured = ProfileRunner::new(&runner, &store).measure(&target(), None, None);
@@ -111,10 +111,7 @@ fn measure_runs_cargo_test_in_release_with_the_report_path() {
             program: String::from("cargo"),
             arguments: test_command(),
             directory: Some(String::from("/w")),
-            environment: vec![(
-                String::from("STINGY4RUST_REPORT"),
-                String::from(REPORT_PATH)
-            )],
+            environment: vec![(String::from("STINGY4RUST_REPORT"), report_path())],
             passes_through: true,
         }]
     );
@@ -126,7 +123,7 @@ fn measure_with_a_profile_named_passes_it() {
     let store = FakeFileStore::new();
     let runner = FakeCommandRunner::new()
         .answering("cargo test", Some(0), "")
-        .writing_report(&store, REPORT_PATH, &report("measured", 3));
+        .writing_report(&store, &report_path(), &report("measured", 3));
 
     // Act
     let measured = ProfileRunner::new(&runner, &store).measure(&target(), Some("growing"), None);
@@ -136,10 +133,7 @@ fn measure_with_a_profile_named_passes_it() {
     assert_eq!(
         runner.calls()[0].environment,
         vec![
-            (
-                String::from("STINGY4RUST_REPORT"),
-                String::from(REPORT_PATH)
-            ),
+            (String::from("STINGY4RUST_REPORT"), report_path()),
             (String::from("STINGY4RUST_PROFILE"), String::from("growing")),
         ]
     );
@@ -151,7 +145,7 @@ fn measure_with_a_target_passes_it_to_cargo() {
     let store = FakeFileStore::new();
     let runner = FakeCommandRunner::new()
         .answering("cargo test", Some(0), "")
-        .writing_report(&store, REPORT_PATH, &report("measured", 3));
+        .writing_report(&store, &report_path(), &report("measured", 3));
 
     // Act
     let measured =

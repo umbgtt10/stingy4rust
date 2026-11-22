@@ -11,9 +11,15 @@ readme = "../README.md"
 keywords = ["allocation", "memory", "budget", "profiling", "ci"]
 categories = ["development-tools", "memory-management"]
 
+autotests = false
+
 [lib]
 name = "stingy4rust"
 path = "src/lib.rs"
+
+[[test]]
+name = "all_tests"
+path = "tests/all_tests.rs"
 
 # No `unsafe` in any target, tests included; the crate root says so as well.
 [lints.rust]

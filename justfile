@@ -31,11 +31,13 @@ hooks:
 sync:
     cargo xtask sync
 
-# Formatting, clippy and tests -- cargo built-ins only, so it works on a fresh
-# checkout with none of the house tools installed.
+# Formatting, clippy, the core built for a microcontroller -- it is `no_std`,
+# and a host build proves nothing about that -- and the tests. Cargo built-ins
+# only, so it works on a fresh checkout with none of the house tools installed.
 stage1: sync
     cargo fmt {{fmt_mode}}
     cargo clippy --workspace --all-targets -- -D warnings
+    cargo check -p stingy4rust-core --no-default-features --target thumbv7em-none-eabihf
     cargo test --workspace
 
 # The technology-free core, unsafe confined to the allocators, house rules,

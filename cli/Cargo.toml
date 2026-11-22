@@ -11,6 +11,29 @@ readme = "../README.md"
 keywords = ["cargo-subcommand", "allocation", "memory", "budget", "ci"]
 categories = ["development-tools::cargo-plugins", "memory-management"]
 
+autotests = false
+
+[lib]
+name = "stingy4rust_cli"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cargo-stingy4rust"
+path = "src/main.rs"
+
+[[test]]
+name = "all_tests"
+path = "tests/all_tests.rs"
+
+[dependencies]
+clap = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+stingy4rust-core = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
 # No `unsafe` in any target, tests included.
 [lints.rust]
 unsafe_code = "forbid"

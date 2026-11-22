@@ -28,5 +28,6 @@ serde = { version = "1", features = ["derive"] }
 # allocating, so a `static` allocator's ledger is `Sync` with no `unsafe`.
 spin = { version = "0.12", default-features = false, features = ["spin_mutex"] }
 serde_json = "1"
+clap = { version = "4", features = ["derive"] }
 syn = { version = "2", features = ["full", "visit"] }
 tempfile = "3"

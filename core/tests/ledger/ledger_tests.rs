@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: MIT
 
 use stingy4rust::figures::heap_figures::HeapFigures;
+use stingy4rust::figures::operation_figures::OperationFigures;
 use stingy4rust::figures::scope_name::ScopeName;
 use stingy4rust::ledger::ledger::Ledger;
 use stingy4rust::ledger::run_status::RunStatus;
@@ -147,6 +148,23 @@ fn leave_after_end_changes_nothing() {
 }
 
 #[test]
+fn leave_during_a_run_records_the_rise_of_the_entry_it_closes() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    let depth = ledger.enter(worker());
+    ledger.allocated(0x1000, 64, THREAD);
+
+    // Act
+    ledger.leave(depth);
+
+    // Assert
+    let tally = ledger.end();
+    assert_eq!(tally.status, RunStatus::Measured);
+    assert_eq!(tally.scopes[1].largest_entry_rise, 64);
+}
+
+#[test]
 fn new_builds_a_ledger_a_static_can_hold() {
     // Arrange
     SHARED.begin(THREAD);
@@ -189,6 +207,28 @@ fn sent_before_begin_is_not_counted() {
     let wire = ledger.end().wire;
     assert_eq!(wire.len(), 1);
     assert_eq!(wire[0].kind, "pong");
+}
+
+#[test]
+fn sent_while_an_operation_is_open_charges_it() {
+    // Arrange
+    let ledger = Ledger::<4, 8, 4>::new();
+    ledger.begin(THREAD);
+    ledger.begin_operation("exchange");
+
+    // Act
+    ledger.sent("ping", 10);
+
+    // Assert
+    assert_eq!(
+        ledger.end().operations,
+        vec![OperationFigures {
+            name: "exchange",
+            count: 0,
+            messages: 1,
+            bytes: 10,
+        }]
+    );
 }
 
 #[test]

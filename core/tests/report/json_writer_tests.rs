@@ -67,6 +67,18 @@ fn key_escapes_what_a_json_string_cannot_hold() {
 }
 
 #[test]
+fn string_escapes_a_control_character_past_0x0f_with_both_hex_digits() {
+    // Arrange
+    let writer = JsonWriter::new();
+
+    // Act
+    let writer = writer.string("\u{1f}");
+
+    // Assert
+    assert_eq!(writer.into_text(), "\"\\u001f\"");
+}
+
+#[test]
 fn string_escapes_a_quote_a_backslash_and_control_characters() {
     // Arrange
     let writer = JsonWriter::new();

@@ -52,6 +52,19 @@ fn insert_into_a_full_table_reports_it_full() {
 }
 
 #[test]
+fn insert_into_a_table_of_one_block_holds_it() {
+    // Arrange
+    let mut table = BlockTable::<1>::new();
+
+    // Act
+    let inserted = table.insert(block(0x1000));
+
+    // Assert
+    assert!(inserted);
+    assert_eq!(table.remove(0x1000), Some(block(0x1000)));
+}
+
+#[test]
 fn insert_then_remove_leaves_the_table_empty() {
     // Arrange
     let mut table = BlockTable::<8>::new();

@@ -17,8 +17,9 @@ use crate::thread_mark::ThreadMark;
 
 // A counting allocator: every call goes to the inner allocator, and what it
 // hands out and takes back is counted in the ledger, by the calling thread's
-// mark. The only `unsafe` in the workspace, and the only file allowed it. A run is begun and ended through `Measuring`, and its body reaches
-// the ledger through `Recorder`.
+// mark. The only `unsafe` in the workspace, in one of the two files allowed it:
+// the other is board's allocator, still to come. A run is begun and ended
+// through `Measuring`, and its body reaches the ledger through `Recorder`.
 pub struct Stingy<A, const SCOPES: usize, const BLOCKS: usize, const NAMES: usize> {
     inner: A,
     ledger: Ledger<SCOPES, BLOCKS, NAMES>,

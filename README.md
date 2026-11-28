@@ -10,7 +10,7 @@ the profile target's `main`, the report, budgets with their tolerances, and the
 `stingy4rust-board` still only reserves its name. The design and the plan are
 below.
 
-## What it will do
+## What it does
 
 - **Heap**: allocations, bytes requested and bytes live, counted by an
   allocator wrapper in scopes the harness opens -- one a component, one a step --

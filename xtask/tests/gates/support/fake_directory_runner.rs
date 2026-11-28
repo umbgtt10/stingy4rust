@@ -2,9 +2,9 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
+use serge4rust::process::directory_runner::DirectoryRunner;
 use serge4rust::process::launch_failure::LaunchFailure;
 use std::cell::RefCell;
-use xtask::process::directory_runner::DirectoryRunner;
 
 // The seam the own-budget gate is constructed against, faked so its tests see
 // where each call ran, what it ran, and with which arguments.

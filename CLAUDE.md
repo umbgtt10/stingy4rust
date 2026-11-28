@@ -33,8 +33,9 @@ That means:
 - do not pull assumptions from sibling repositories or crates
 - do not propose cross-repository changes by default
 
-The one standing exception: slice 0 copies its scaffolding from `../dry4rust`,
-read-only, as `docs/IMPLEMENTATION-PLAN.md` section 5 lists.
+There is no standing exception. Slice 0 copied its scaffolding from
+`../dry4rust`, read-only, as `docs/IMPLEMENTATION-PLAN.md` section 5 lists;
+the gates it copied now come from serge4rust, a dependency like any other.
 
 ## Quality Gates
 
@@ -45,8 +46,7 @@ Run:
 `just stage1`
 `just stage2`
 
-If either gate is not green, the work is not complete. (Slice 0 builds them;
-until it is merged, there are none.)
+If either gate is not green, the work is not complete.
 
 Both run identically on Windows, Linux and macOS, and CI runs the same two
 commands -- there is no second definition of the gates to drift out of step.
@@ -58,14 +58,15 @@ only. It starts with `just sync`, `cargo update` over the workspace, whose
 moves are committed on their own.
 
 Stage 2 is `cargo xtask stage2`, a crate under `xtask/` gated like any other
-code, each gate a `Gate` over a `CommandRunner`. The gates, the stage, the
-runner, the failures, the crap report and the commit scoring come from
-serge4rust, from crates.io (`serge4rust = "0.3.2"`). xtask keeps `main.rs`,
-which says which gates run, in what order, with this repository's constants,
-and the gates only this repository runs: unsafe confined, and own budget over
-a `DirectoryRunner` of its own, since serge4rust's runner starts every program
-in the caller's directory. A gate that needs a change is changed in serge4rust
-and released, never patched in place. In this order:
+code, each gate a `Gate`: over a `CommandRunner` where it runs a program, or a
+`DirectoryRunner` where it runs one in a directory of its own, over
+`SourceFiles` where it reads the sources. The gates, the stage, the runners,
+the failures, the crap report and the commit scoring come from serge4rust, from
+crates.io (`serge4rust = "0.3.3"`). xtask keeps `main.rs`, which says which
+gates run, in what order, with this repository's constants, and the gates only
+this repository runs: unsafe confined, and own budget, which runs the
+subcommand in the fixture's workspace. A gate that needs a change is changed in
+serge4rust and released, never patched in place. In this order:
 
 | gate | asks |
 |---|---|
@@ -78,12 +79,13 @@ and released, never patched in place. In this order:
 | `cargo twin4rust` | does every source file have a mirrored test file |
 | `cargo iceberg4rust` | is any file's private implementation risk too high |
 | `cargo deny` | do the dependencies carry an advisory, a refused licence or a foreign source |
-| own budget (from slice 3) | does this checkout's subcommand, built from source, find the fixture within `fixture/stingy4rust-budget.json` |
+| own budget | does this checkout's subcommand, built from source, find the fixture within `fixture/stingy4rust-budget.json` |
 
 The technology-free gate runs first because its fix moves code between crates,
-which changes what every gate behind it measures; stern next, because its
-corrections are renames and moves; the tool's own budget last, because it
-builds the fixture in release.
+which changes what every gate behind it measures, and the unsafe gate, as
+cheap, second; stern third, because its corrections are renames and moves;
+cargo-deny next to last, because its advisories change without the code
+changing; the tool's own budget last, because it builds the fixture in release.
 
 dry4rust checks the published crates' sources at floor 25 against
 `dry4rust-baseline.json`, the duplication accepted with a reason, so it fails
@@ -117,7 +119,11 @@ machine. Never `--no-verify`.
 ### ripe4rust plans the moves
 
 The root `Cargo.toml` names the gates a move must pass, in
-`[workspace.metadata.ripe4rust]`: `just stage1` and `just stage2`. `just ripe`
+`[workspace.metadata.ripe4rust]`: `just stage1` and `just stage2`; and, in
+`published`, the crates others depend on as libraries, `stingy4rust-core` and
+`stingy4rust-host`, so a breaking dependency in their public API is asked
+about as a breaking change of theirs. `cargo-stingy4rust` is published as a
+subcommand: no one depends on its library, so it is not named. `just ripe`
 runs `cargo ripe4rust plan`, which says which moves of the toolchain and the
 dependencies are ripe, and applies none.
 

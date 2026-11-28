@@ -54,8 +54,9 @@ commands -- there is no second definition of the gates to drift out of step.
 Stage 1 is formatting, clippy over every target with warnings as errors, the
 core's check for `thumbv7em-none-eabihf` -- it is `no_std` for microcontrollers,
 and a host build proves nothing about them -- and the tests. Cargo built-ins
-only. It starts with `just sync`, `cargo update` over the workspace, whose
-moves are committed on their own.
+only. It moves no lock file: `just ripe` plans each compatible move, and the
+round applies it under both stages, where a `cargo update` would move more
+than the upgrade being checked.
 
 Stage 2 is `cargo xtask stage2`, a crate under `xtask/` gated like any other
 code, each gate a `Gate`: over a `CommandRunner` where it runs a program, or a

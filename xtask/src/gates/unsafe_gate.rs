@@ -6,11 +6,11 @@ use std::path::{Path, PathBuf};
 
 use syn::{File, parse_file};
 
-use crate::boundary::source_files::SourceFiles;
 use crate::boundary::unsafe_rule::UnsafeRule;
 use crate::boundary::unsafe_use_collector::UnsafeUseCollector;
-use crate::gates::gate::Gate;
-use crate::gates::gate_failure::GateFailure;
+use serge4rust::gates::boundary::source_files::SourceFiles;
+use serge4rust::gates::gate::Gate;
+use serge4rust::gates::gate_failure::GateFailure;
 
 // `unsafe` confined to the files allowed to hold it: every other `.rs` file
 // beneath the rule's directories is parsed, and each one that holds any kind of
@@ -28,16 +28,12 @@ impl<'a> UnsafeGate<'a> {
     fn files(&self) -> Result<Vec<PathBuf>, GateFailure> {
         let mut files = Vec::new();
         for dir in &self.rule.source_dirs {
-            files.extend(
-                self.sources
-                    .rust_files(dir)
-                    .map_err(|failure| GateFailure::Found(failure.to_string()))?,
-            );
+            files.extend(self.sources.rust_files(dir)?);
         }
         if files.is_empty() {
-            return Err(GateFailure::Found(String::from(
-                "no source file was scanned for unsafe",
-            )));
+            return Err(GateFailure::Own {
+                reason: String::from("no source file was scanned for unsafe"),
+            });
         }
         Ok(files)
     }
@@ -62,12 +58,10 @@ impl<'a> UnsafeGate<'a> {
     }
 
     fn parsed(&self, file: &Path) -> Result<File, GateFailure> {
-        let source = self
-            .sources
-            .read(file)
-            .map_err(|failure| GateFailure::Found(failure.to_string()))?;
-        parse_file(&source).map_err(|error| {
-            GateFailure::Found(format!("could not parse {}: {error}", file.display()))
+        let source = self.sources.read(file)?;
+        parse_file(&source).map_err(|error| GateFailure::Unparsable {
+            file: file.display().to_string(),
+            reason: error.to_string(),
         })
     }
 }
@@ -88,7 +82,7 @@ impl Gate for UnsafeGate<'_> {
         if findings.is_empty() {
             Ok(())
         } else {
-            Err(GateFailure::Found(findings.join("\n")))
+            Err(GateFailure::Breached { findings })
         }
     }
 }

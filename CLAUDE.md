@@ -58,7 +58,14 @@ only. It starts with `just sync`, `cargo update` over the workspace, whose
 moves are committed on their own.
 
 Stage 2 is `cargo xtask stage2`, a crate under `xtask/` gated like any other
-code, each gate a `Gate` over a `CommandRunner`. In this order:
+code, each gate a `Gate` over a `CommandRunner`. The gates, the stage, the
+runner, the failures, the crap report and the commit scoring come from
+serge4rust, from crates.io (`serge4rust = "0.3.2"`). xtask keeps `main.rs`,
+which says which gates run, in what order, with this repository's constants,
+and the gates only this repository runs: unsafe confined, and own budget over
+a `DirectoryRunner` of its own, since serge4rust's runner starts every program
+in the caller's directory. A gate that needs a change is changed in serge4rust
+and released, never patched in place. In this order:
 
 | gate | asks |
 |---|---|

@@ -5,5 +5,3 @@
 mod boundary;
 mod gates;
 mod process;
-mod reports;
-mod shear;

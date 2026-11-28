@@ -2,12 +2,12 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-use crate::gates::support::fake_command_runner::FakeCommandRunner;
-use xtask::gates::gate::Gate;
-use xtask::gates::gate_failure::GateFailure;
+use crate::gates::support::fake_directory_runner::FakeDirectoryRunner;
+use serge4rust::gates::gate::Gate;
+use serge4rust::gates::gate_failure::GateFailure;
 use xtask::gates::own_budget_gate::OwnBudgetGate;
 
-fn gate(runner: &FakeCommandRunner) -> OwnBudgetGate<'_> {
+fn gate(runner: &FakeDirectoryRunner) -> OwnBudgetGate<'_> {
     OwnBudgetGate::new(
         runner,
         String::from("/repo/Cargo.toml"),
@@ -19,7 +19,7 @@ fn gate(runner: &FakeCommandRunner) -> OwnBudgetGate<'_> {
 #[test]
 fn label_names_the_own_budget_gate() {
     // Arrange
-    let runner = FakeCommandRunner::new();
+    let runner = FakeDirectoryRunner::new();
 
     // Act
     let label = gate(&runner).label();
@@ -31,17 +31,14 @@ fn label_names_the_own_budget_gate() {
 #[test]
 fn run_builds_the_subcommand_from_source_and_checks_the_fixture_in_its_directory() {
     // Arrange
-    let runner = FakeCommandRunner::new();
+    let runner = FakeDirectoryRunner::new();
 
     // Act
     let _ = gate(&runner).run();
 
     // Assert
     assert_eq!(runner.programs(), vec![String::from("cargo")]);
-    assert_eq!(
-        runner.directories(),
-        vec![Some(String::from("/repo/fixture"))]
-    );
+    assert_eq!(runner.directories(), vec![String::from("/repo/fixture")]);
     assert_eq!(
         runner.calls()[0],
         [
@@ -66,19 +63,7 @@ fn run_builds_the_subcommand_from_source_and_checks_the_fixture_in_its_directory
 #[test]
 fn run_ended_by_a_signal_reports_the_missing_code() {
     // Arrange
-    let runner = FakeCommandRunner::new().with_streaming_code(None);
-
-    // Act
-    let outcome = gate(&runner).run();
-
-    // Assert
-    assert_eq!(outcome, Err(GateFailure::Exited(None)));
-}
-
-#[test]
-fn run_over_its_budget_fails_naming_the_budget() {
-    // Arrange
-    let runner = FakeCommandRunner::new().with_streaming_code(Some(1));
+    let runner = FakeDirectoryRunner::new().with_streaming_code(None);
 
     // Act
     let outcome = gate(&runner).run();
@@ -86,35 +71,59 @@ fn run_over_its_budget_fails_naming_the_budget() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Found(String::from(
-            "the fixture's figures moved from /repo/fixture/stingy4rust-budget.json"
-        )))
+        Err(GateFailure::Own {
+            reason: String::from("exit code None")
+        })
+    );
+}
+
+#[test]
+fn run_over_its_budget_fails_naming_the_budget() {
+    // Arrange
+    let runner = FakeDirectoryRunner::new().with_streaming_code(Some(1));
+
+    // Act
+    let outcome = gate(&runner).run();
+
+    // Assert
+    assert_eq!(
+        outcome,
+        Err(GateFailure::Own {
+            reason: String::from(
+                "the fixture's figures moved from /repo/fixture/stingy4rust-budget.json"
+            )
+        })
     );
 }
 
 #[test]
 fn run_unable_to_measure_could_not_run() {
     // Arrange
-    let runner = FakeCommandRunner::new().with_streaming_code(Some(2));
+    let runner = FakeDirectoryRunner::new().with_streaming_code(Some(2));
 
     // Act
     let outcome = gate(&runner).run();
 
     // Assert
-    assert_eq!(outcome, Err(GateFailure::CouldNotRun(Some(2))));
+    assert_eq!(
+        outcome,
+        Err(GateFailure::Own {
+            reason: String::from("could not run, exit code 2")
+        })
+    );
 }
 
 #[test]
 fn run_whose_cargo_cannot_start_fails_to_launch() {
     // Arrange
-    let runner = FakeCommandRunner::new().with_launch_failure();
+    let runner = FakeDirectoryRunner::new().with_launch_failure();
 
     // Act
     let outcome = gate(&runner).run();
 
     // Assert
     assert!(
-        matches!(outcome, Err(GateFailure::NotLaunched(_))),
+        matches!(outcome, Err(GateFailure::Launch(_))),
         "{outcome:?}"
     );
 }
@@ -122,7 +131,7 @@ fn run_whose_cargo_cannot_start_fails_to_launch() {
 #[test]
 fn run_within_its_budget_passes() {
     // Arrange
-    let runner = FakeCommandRunner::new().with_streaming_code(Some(0));
+    let runner = FakeDirectoryRunner::new().with_streaming_code(Some(0));
 
     // Act
     let outcome = gate(&runner).run();

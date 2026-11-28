@@ -1,6 +1,6 @@
 # Profiles whose figures are known exactly, run under the host's counting
-# allocator: the tool's own corpus, and in slice 3 the budget it gates itself
-# with. Every allocation goes through black_box, so the optimiser keeps it.
+# allocator: the tool's own corpus, and the budget it gates itself with. Every
+# allocation goes through black_box, so the optimiser keeps it.
 [package]
 name = "measured"
 version = "0.0.0"

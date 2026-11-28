@@ -1,4 +1,4 @@
-# What the dependencies are, judged by `cargo deny check`, last in stage 2.
+# What the dependencies are, judged by `cargo deny check` in stage 2.
 #
 # The same file in every *4rust repository and slotgate: the licences below are
 # the union of what their dependency trees carry, nothing allowed in advance.

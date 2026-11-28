@@ -3,7 +3,9 @@
 // SPDX-License-Identifier: MIT
 
 //! The measuring behind `cargo-stingy4rust`: a ledger that counts a run's heap
-//! by scope, never allocating while it counts, and the figures it hands back.
+//! by scope, and its wire, stores and operations, never allocating while it
+//! counts; the runs and profiles that reach it; the figures it hands back, the
+//! report they are written as, and the budgets they are held to.
 
 #![no_std]
 #![forbid(unsafe_code)]

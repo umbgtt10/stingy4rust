@@ -32,9 +32,10 @@ tempfile = { workspace = true }
 [lints.rust]
 unsafe_code = "forbid"
 
-# The same configuration core carries. The crate that runs the gates is held to
-# the bar it enforces, rather than being the one package in the workspace that
-# is measured more loosely than the code it measures.
+# The configuration core carries, less the three lints core allows and xtask
+# has no need to. The crate that runs the gates is held to the bar it enforces,
+# rather than being the one package in the workspace that is measured more
+# loosely than the code it measures.
 [lints.clippy]
 pedantic = { level = "warn", priority = -1 }
 nursery = { level = "warn", priority = -1 }

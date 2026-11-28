@@ -41,11 +41,13 @@ stage1: sync
     cargo test --workspace
 
 # The technology-free core, unsafe confined to the allocators, house rules,
-# dependencies, duplication, CRAP, mirrored tests, file risk and the licences
-# and advisories of the dependencies, run in that order. The core's gate runs
-# first because its fix moves code between crates; stern runs next because its
-# corrections are renames, file moves and directory splits: a layout it is
-# about to reject is one the others would have measured for nothing.
+# dependencies, duplication, CRAP, mirrored tests, file risk, the licences and
+# advisories of the dependencies and the tool's own budget, run in that order.
+# The core's gate runs first because its fix moves code between crates, and the
+# unsafe gate, as cheap, second; stern runs third because its corrections are
+# renames, file moves and directory splits: a layout it is about to reject is
+# one the others would have measured for nothing. The own budget runs last
+# because it builds the subcommand and the fixture in release.
 stage2:
     cargo xtask stage2
 

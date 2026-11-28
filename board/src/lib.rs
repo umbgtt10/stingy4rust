@@ -3,7 +3,8 @@
 // SPDX-License-Identifier: MIT
 
 //! A board's counting allocator behind `cargo-stingy4rust`. In development:
-//! this release reserves the name and carries no API yet.
+//! it carries no API yet, and is not published until it does; its name is
+//! reserved at 0.0.1.
 
 #![no_std]
 #![deny(unsafe_code)]

@@ -1,6 +1,6 @@
 [package]
 name = "stingy4rust-board"
-description = "A board's counting allocator behind cargo-stingy4rust: a Rust codebase's heap and peak heap under fixed load profiles, on a microcontroller. In development: this release reserves the name."
+description = "A board's counting allocator behind cargo-stingy4rust: a Rust codebase's heap and peak heap under fixed load profiles, on a microcontroller. In development: no API yet."
 version.workspace = true
 edition.workspace = true
 rust-version.workspace = true

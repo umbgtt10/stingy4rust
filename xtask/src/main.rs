@@ -153,7 +153,7 @@ fn run_stage2() -> ExitCode {
         },
     );
 
-    // Then, and as cheaply: `unsafe` nowhere in the workspace but the
+    // Second, and as cheaply: `unsafe` nowhere in the workspace but the
     // allocators' own files. The compiler's lints deny it everywhere else
     // already; this is what keeps a file-level allow from moving it.
     let confined = UnsafeGate::new(
@@ -167,21 +167,20 @@ fn run_stage2() -> ExitCode {
         },
     );
 
-    // Second, and with no --package at all: one call judges every member
+    // Third, and with no --package at all: one call judges every member
     // against every rule, and stern4rust.toml names the header rather than this
     // call, so a hand-run of `cargo stern4rust` from the repository root sees
     // exactly what this sees.
     let stern = SternGate::new(&runner, manifest_path.clone(), Vec::new());
 
-    // Third: every declared dependency used, in the section that uses it. Its
+    // Fourth: every declared dependency used, in the section that uses it. Its
     // corrections edit manifests only, so they move nothing the gates behind it
     // measure, and it costs a second.
     let shear = ShearGate::new(&runner, manifest_path.clone());
-    // Last in stage 2: its advisories change without the code changing (see DenyGate).
-    let deny = DenyGate::new(&runner, manifest_path.clone(), DENY_FETCH_ATTEMPTS);
 
-    // Fourth, for the same reason stern4rust runs early: removing a duplicate
-    // moves code between files, which changes what the three behind it measure.
+    // Fifth, for the same reason stern4rust runs early: removing a duplicate
+    // moves code between files, which changes what crap, twin and iceberg,
+    // behind it, measure.
     // The installed dry4rust, over the published crates' sources in one run, so
     // a copy from one into another is seen: tests repeat their arrangement by
     // design, the fixture is a corpus, and validation and xtask are not
@@ -232,10 +231,14 @@ fn run_stage2() -> ExitCode {
     let twin = TwinGate::new(&runner, manifest_path.clone(), measured.clone());
     let iceberg = IcebergGate::new(
         &runner,
-        manifest_path,
+        manifest_path.clone(),
         measured,
         String::from(ICEBERG_THRESHOLD),
     );
+
+    // Behind every gate that reads the code, and ahead only of the own budget:
+    // its advisories change without the code changing (see DenyGate).
+    let deny = DenyGate::new(&runner, manifest_path, DENY_FETCH_ATTEMPTS);
 
     // Last, as it builds the subcommand and the fixture in release: this
     // checkout's subcommand holds the fixture to the fixture's own budget.

@@ -69,12 +69,7 @@ fn run_ended_by_a_signal_reports_the_missing_code() {
     let outcome = gate(&runner).run();
 
     // Assert
-    assert_eq!(
-        outcome,
-        Err(GateFailure::Own {
-            reason: String::from("exit code None")
-        })
-    );
+    assert_eq!(outcome, Err(GateFailure::CouldNotRun { exit_code: None }));
 }
 
 #[test]
@@ -107,9 +102,7 @@ fn run_unable_to_measure_could_not_run() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Own {
-            reason: String::from("could not run, exit code 2")
-        })
+        Err(GateFailure::CouldNotRun { exit_code: Some(2) })
     );
 }
 
@@ -125,6 +118,23 @@ fn run_whose_cargo_cannot_start_fails_to_launch() {
     assert!(
         matches!(outcome, Err(GateFailure::Launch(_))),
         "{outcome:?}"
+    );
+}
+
+#[test]
+fn run_whose_subcommand_does_not_build_could_not_run() {
+    // Arrange
+    let runner = FakeDirectoryRunner::new().with_streaming_code(Some(101));
+
+    // Act
+    let outcome = gate(&runner).run();
+
+    // Assert
+    assert_eq!(
+        outcome,
+        Err(GateFailure::CouldNotRun {
+            exit_code: Some(101)
+        })
     );
 }
 

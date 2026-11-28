@@ -28,7 +28,6 @@ use std::process::ExitCode;
 use xtask::boundary::unsafe_rule::UnsafeRule;
 use xtask::gates::own_budget_gate::OwnBudgetGate;
 use xtask::gates::unsafe_gate::UnsafeGate;
-use xtask::process::system_directory_runner::SystemDirectoryRunner;
 
 const BOARD_PACKAGE: &str = "stingy4rust-board";
 const CLI_PACKAGE: &str = "cargo-stingy4rust";
@@ -242,9 +241,8 @@ fn run_stage2() -> ExitCode {
 
     // Last, as it builds the subcommand and the fixture in release: this
     // checkout's subcommand holds the fixture to the fixture's own budget.
-    let directories = SystemDirectoryRunner::new();
     let own_budget = OwnBudgetGate::new(
-        &directories,
+        &runner,
         workspace_manifest_path(),
         root.join(FIXTURE).to_string_lossy().into_owned(),
         String::from(FIXTURE_PACKAGE),

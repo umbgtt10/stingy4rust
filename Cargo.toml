@@ -35,6 +35,11 @@ serge4rust = "0.3.3"
 syn = { version = "3.0.10", features = ["full", "visit"] }
 tempfile = "3"
 
-# The gates ripe4rust runs over a planned change, as this repository runs them.
+# The gates ripe4rust runs over a planned change, as this repository runs them,
+# and the crates published for others to depend on as libraries: a breaking
+# dependency in their public API is a breaking change of theirs.
+# cargo-stingy4rust is published too, but as a subcommand -- its library is
+# its own binary's and its tests', depended on by no one.
 [workspace.metadata.ripe4rust]
 gates = ["just stage1", "just stage2"]
+published = ["stingy4rust-core", "stingy4rust-host"]

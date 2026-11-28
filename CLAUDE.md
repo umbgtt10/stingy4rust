@@ -119,7 +119,11 @@ machine. Never `--no-verify`.
 ### ripe4rust plans the moves
 
 The root `Cargo.toml` names the gates a move must pass, in
-`[workspace.metadata.ripe4rust]`: `just stage1` and `just stage2`. `just ripe`
+`[workspace.metadata.ripe4rust]`: `just stage1` and `just stage2`; and, in
+`published`, the crates others depend on as libraries, `stingy4rust-core` and
+`stingy4rust-host`, so a breaking dependency in their public API is asked
+about as a breaking change of theirs. `cargo-stingy4rust` is published as a
+subcommand: no one depends on its library, so it is not named. `just ripe`
 runs `cargo ripe4rust plan`, which says which moves of the toolchain and the
 dependencies are ripe, and applies none.
 

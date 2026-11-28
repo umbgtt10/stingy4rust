@@ -34,3 +34,7 @@ clap = { version = "4", features = ["derive"] }
 serge4rust = "0.3.2"
 syn = { version = "2", features = ["full", "visit"] }
 tempfile = "3"
+
+# The gates ripe4rust runs over a planned change, as this repository runs them.
+[workspace.metadata.ripe4rust]
+gates = ["just stage1", "just stage2"]

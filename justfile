@@ -48,3 +48,7 @@ stage1: sync
 # about to reject is one the others would have measured for nothing.
 stage2:
     cargo xtask stage2
+
+# ripe4rust's plan: which moves of the toolchain and the dependencies are ripe.
+ripe:
+    cargo ripe4rust plan

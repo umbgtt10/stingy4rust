@@ -114,6 +114,15 @@ machine. Never `--no-verify`.
 `cargo install cargo-grip4rust`
 `cargo install cargo-braintax4rust`
 
+### ripe4rust plans the moves
+
+The root `Cargo.toml` names the gates a move must pass, in
+`[workspace.metadata.ripe4rust]`: `just stage1` and `just stage2`. `just ripe`
+runs `cargo ripe4rust plan`, which says which moves of the toolchain and the
+dependencies are ripe, and applies none.
+
+`cargo install --locked cargo-ripe4rust`
+
 ## Technology-free core
 
 `core` touches no technology, so mutation testing needs nothing but its own

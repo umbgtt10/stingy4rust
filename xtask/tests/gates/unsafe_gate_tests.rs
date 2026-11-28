@@ -3,10 +3,11 @@
 // SPDX-License-Identifier: MIT
 
 use crate::gates::support::in_memory_source_files::InMemorySourceFiles;
+use serge4rust::gates::boundary::source_read_failure::SourceReadFailure;
+use serge4rust::gates::gate::Gate;
+use serge4rust::gates::gate_failure::GateFailure;
 use std::path::PathBuf;
 use xtask::boundary::unsafe_rule::UnsafeRule;
-use xtask::gates::gate::Gate;
-use xtask::gates::gate_failure::GateFailure;
 use xtask::gates::unsafe_gate::UnsafeGate;
 
 const ALLOCATOR: &str = "/w/host/src/stingy.rs";
@@ -45,9 +46,11 @@ fn run_of_a_core_using_unsafe_fails_naming_the_file() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Found(String::from(
-            "/w/core/src/lib.rs uses an unsafe impl, which only /w/host/src/stingy.rs may"
-        )))
+        Err(GateFailure::Breached {
+            findings: vec![String::from(
+                "/w/core/src/lib.rs uses an unsafe impl, which only /w/host/src/stingy.rs may"
+            )]
+        })
     );
 }
 
@@ -62,9 +65,10 @@ fn run_of_a_directory_it_cannot_list_fails_naming_it() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Found(String::from(
-            "could not read /w/host: not held"
-        )))
+        Err(GateFailure::SourceUnreadable(SourceReadFailure {
+            path: PathBuf::from("/w/host"),
+            reason: String::from("not held"),
+        }))
     );
 }
 
@@ -81,7 +85,7 @@ fn run_of_a_file_that_does_not_parse_fails_naming_it() {
     // Assert
     assert!(matches!(
         outcome,
-        Err(GateFailure::Found(message)) if message.starts_with("could not parse /w/core/src/lib.rs: ")
+        Err(GateFailure::Unparsable { file, .. }) if file == "/w/core/src/lib.rs"
     ));
 }
 
@@ -98,9 +102,16 @@ fn run_of_two_files_using_unsafe_names_each_on_a_line() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Found(String::from(
-            "/w/core/src/lib.rs uses an unsafe impl, which only /w/host/src/stingy.rs may\n/w/host/src/lib.rs uses an unsafe fn, which only /w/host/src/stingy.rs may"
-        )))
+        Err(GateFailure::Breached {
+            findings: vec![
+                String::from(
+                    "/w/core/src/lib.rs uses an unsafe impl, which only /w/host/src/stingy.rs may"
+                ),
+                String::from(
+                    "/w/host/src/lib.rs uses an unsafe fn, which only /w/host/src/stingy.rs may"
+                ),
+            ]
+        })
     );
 }
 
@@ -119,9 +130,9 @@ fn run_with_no_directory_to_scan_fails() {
     // Assert
     assert_eq!(
         outcome,
-        Err(GateFailure::Found(String::from(
-            "no source file was scanned for unsafe"
-        )))
+        Err(GateFailure::Own {
+            reason: String::from("no source file was scanned for unsafe")
+        })
     );
 }
 

@@ -2,15 +2,15 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
+use serge4rust::gates::boundary::source_files::SourceFiles;
+use serge4rust::gates::boundary::source_read_failure::SourceReadFailure;
 use std::collections::BTreeMap;
 use std::path::Path;
 use std::path::PathBuf;
-use xtask::boundary::source_files::SourceFiles;
-use xtask::boundary::source_read_failure::SourceReadFailure;
 
-// The seam the boundary gate reads source through, faked once so the gate's
-// tests share one fake: files held in memory, and a directory it was not given
-// is one it cannot list.
+// The seam the unsafe gate reads source through, serge4rust's, faked once so
+// the gate's tests share one fake: files held in memory, and a directory it was
+// not given is one it cannot list.
 pub struct InMemorySourceFiles {
     files: BTreeMap<PathBuf, String>,
 }

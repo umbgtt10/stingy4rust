@@ -2,7 +2,5 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-pub mod command_outcome;
-pub mod command_runner;
-pub mod launch_failure;
-pub mod system_command_runner;
+pub mod directory_runner;
+pub mod system_directory_runner;

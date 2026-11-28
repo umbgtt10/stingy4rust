@@ -2,6 +2,5 @@
 // Licensed under the MIT License
 // SPDX-License-Identifier: MIT
 
-pub mod fake_command_runner;
-pub mod fake_gate;
+pub mod fake_directory_runner;
 pub mod in_memory_source_files;

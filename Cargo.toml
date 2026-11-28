@@ -38,7 +38,3 @@ tempfile = "3"
 # The gates ripe4rust runs over a planned change, as this repository runs them.
 [workspace.metadata.ripe4rust]
 gates = ["just stage1", "just stage2"]
-
-# The moves held back, each with its reason and the day it is looked at again.
-[workspace.metadata.ripe4rust.pins]
-rust = { reason = "just stage1: clippy on 1.100.1 refuses host/src/profile_main.rs:51 under -D warnings: this function has a #[must_use] attribute with no message, but returns a type already considered as #[must_use] (clippy::double_must_use)", review = "2026-12-12" }

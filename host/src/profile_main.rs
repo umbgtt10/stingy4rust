@@ -47,7 +47,6 @@ impl ProfileMain {
         }
     }
 
-    #[must_use]
     pub fn run(&self) -> ExitCode {
         match self.reported() {
             Ok(true) => ExitCode::SUCCESS,

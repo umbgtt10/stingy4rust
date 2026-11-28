@@ -4,7 +4,7 @@ A cargo subcommand that holds a Rust codebase to **budgets**: heap, peak heap,
 storage and wire bytes, measured under **fixed load profiles** and checked in
 CI, so what a change costs is seen and what it saves is kept.
 
-**In development.** Version 0.1.0 is the host tool: the counting allocator,
+**In development.** Version 0.1.1 is the host tool: the counting allocator,
 the profile target's `main`, the report, budgets with their tolerances, and the
 `cargo stingy4rust` subcommand. Microcontrollers come later --
 `stingy4rust-board` still only reserves its name. The design and the plan are

@@ -11,8 +11,8 @@ readme = "../README.md"
 keywords = ["allocator", "microcontroller", "no-std", "memory", "budget"]
 categories = ["memory-management", "no-std"]
 # Not published until slice 6 brings the board's allocator: its name stays
-# reserved at 0.0.1 rather than an empty 0.1.0 suggesting a board tool that is
-# not there yet.
+# reserved at 0.0.1 rather than an empty release at the workspace's version
+# suggesting a board tool that is not there yet.
 publish = false
 
 # `unsafe` denied, never forbidden: the allocator's file alone allows it,

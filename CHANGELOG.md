@@ -9,6 +9,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-28
+
+A maintenance release: nothing a project relies on changes. The API, the
+subcommand, its exit codes and the figures it reports are as in 0.1.0.
+`stingy4rust-board` is still not published, its name reserved at 0.0.1.
+
+### Changed
+
+- `stingy4rust-core`'s crate documentation says all the crate holds: the
+  ledger's heap, wire, stores and operations, never allocating while it
+  counts; the runs and profiles that reach it; the figures, the report they
+  are written as and the budgets they are held to -- not the ledger alone.
+- `stingy4rust-host`: `ProfileMain::run` no longer carries a `#[must_use]` of
+  its own. It returns an `ExitCode`, which is `#[must_use]` already, so a
+  result left unused warns as before; clippy from Rust 1.100 flags the
+  attribute as doubled (`clippy::double_must_use`).
+- `cargo-stingy4rust`'s lock takes clap and clap_builder 4.6.10, which
+  `cargo install --locked` builds it with.
+
 ## [0.1.0] - 2026-11-22
 
 The host tool: a project's load profiles run under a counting allocator, their

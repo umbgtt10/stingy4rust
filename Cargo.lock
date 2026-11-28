@@ -60,7 +60,7 @@ checksum = "3ded4057c258ba199e2d26386d3af3780957ecaee6c4ef4041c6b4b8b97c0b06"
 
 [[package]]
 name = "cargo-stingy4rust"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "clap",
  "serde",
@@ -295,18 +295,18 @@ checksum = "0134f9043ed38b087ac4f7d4af44c79e2c9e5094421fe3164f435ce585953b10"
 
 [[package]]
 name = "stingy4rust-board"
-version = "0.1.0"
+version = "0.1.1"
 
 [[package]]
 name = "stingy4rust-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "spin",
 ]
 
 [[package]]
 name = "stingy4rust-host"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "stingy4rust-core",
  "tempfile",
@@ -356,7 +356,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "validation"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serde_json",
  "tempfile",
@@ -379,7 +379,7 @@ dependencies = [
 
 [[package]]
 name = "xtask"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "serge4rust",
  "syn",

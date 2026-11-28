@@ -10,7 +10,7 @@ exclude = ["fixture"]
 
 # One version for every member: the published crates release together.
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 rust-version = "1.91"
 license = "MIT"
@@ -22,7 +22,7 @@ authors = ["Umberto Gotti <umberto.gotti@umbertogotti.dev>"]
 [workspace.dependencies]
 # The published core, taken by path so host and the tools around it build
 # against this checkout; its version, because a published host names one.
-stingy4rust-core = { path = "core", version = "0.1.0" }
+stingy4rust-core = { path = "core", version = "0.1.1" }
 serde = { version = "1", features = ["derive"] }
 # The core's one dependency: a lock built in a `const fn` and taken without
 # allocating, so a `static` allocator's ledger is `Sync` with no `unsafe`.

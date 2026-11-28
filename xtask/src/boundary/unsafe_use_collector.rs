@@ -6,7 +6,7 @@ use syn::visit::{
     Visit, visit_attribute, visit_expr_unsafe, visit_item_foreign_mod, visit_item_impl,
     visit_item_trait, visit_signature,
 };
-use syn::{Attribute, ExprUnsafe, File, ItemForeignMod, ItemImpl, ItemTrait, Signature};
+use syn::{Attribute, ExprUnsafe, File, ItemForeignMod, ItemImpl, ItemTrait, Safety, Signature};
 
 // Every kind of `unsafe` one parsed file holds -- a block, a fn, an impl, a
 // trait, an extern block, an attribute -- each named once, in order. Read from
@@ -61,7 +61,7 @@ impl<'ast> Visit<'ast> for UnsafeUseCollector {
     }
 
     fn visit_signature(&mut self, node: &'ast Signature) {
-        self.record(node.unsafety.is_some(), "fn");
+        self.record(matches!(node.safety, Safety::Unsafe(_)), "fn");
         visit_signature(self, node);
     }
 }

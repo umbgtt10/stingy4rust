@@ -20,6 +20,15 @@ fn collect_a_file_with_no_unsafe_finds_nothing() {
 }
 
 #[test]
+fn collect_a_safe_fn_in_an_unsafe_extern_block_names_only_the_block() {
+    // Arrange & Act
+    let found = collected("unsafe extern \"C\" { safe fn abs(input: i32) -> i32; }");
+
+    // Assert
+    assert_eq!(found, vec![String::from("an unsafe extern block")]);
+}
+
+#[test]
 fn collect_an_unsafe_attribute_names_it() {
     // Arrange & Act
     let found = collected("#[unsafe(no_mangle)]\npub extern \"C\" fn f() {}");

@@ -3,11 +3,16 @@
 // SPDX-License-Identifier: MIT
 
 use std::env::consts::EXE_SUFFIX;
-use std::env::current_exe;
+use std::env::var_os;
+use std::ffi::OsString;
 use std::path::Path;
+use std::path::PathBuf;
 use std::process::Command;
 use std::sync::Mutex;
 use std::sync::PoisonError;
+
+use serde_json::Value;
+use serde_json::from_slice;
 
 static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
 
@@ -15,8 +20,9 @@ static ONE_AT_A_TIME: Mutex<()> = Mutex::new(());
 // first -- in the fixture workspace, keeping what it printed and its exit
 // code. Runs go one at a time: a package's report is one file under the
 // fixture's target directory, and two runs at once would each remove the
-// other's. The binary is the one built beside this test binary, which a
-// workspace test run builds.
+// other's. The binary is the one a workspace test run builds, where Cargo
+// puts a member's binaries: the `debug` folder of the target directory that
+// `cargo metadata` names.
 pub struct SubcommandRun {
     stdout: String,
     stderr: String,
@@ -27,13 +33,7 @@ impl SubcommandRun {
     #[must_use]
     pub fn of(arguments: &[&str]) -> Self {
         let _one = ONE_AT_A_TIME.lock().unwrap_or_else(PoisonError::into_inner);
-        let mut binary = current_exe().expect("the test binary knows where it is");
-        binary.pop();
-        if binary.ends_with("deps") {
-            binary.pop();
-        }
-        binary.push(format!("cargo-stingy4rust{EXE_SUFFIX}"));
-        let output = Command::new(&binary)
+        let output = Command::new(Self::binary())
             .arg("stingy4rust")
             .args(arguments)
             .current_dir(
@@ -63,5 +63,21 @@ impl SubcommandRun {
     #[must_use]
     pub fn stdout(&self) -> &str {
         &self.stdout
+    }
+
+    fn binary() -> PathBuf {
+        let output = Command::new(var_os("CARGO").unwrap_or_else(|| OsString::from("cargo")))
+            .args(["metadata", "--format-version", "1", "--no-deps"])
+            .current_dir(env!("CARGO_MANIFEST_DIR"))
+            .output()
+            .expect("cargo starts");
+        let metadata: Value = from_slice(&output.stdout).expect("cargo metadata writes JSON");
+        Path::new(
+            metadata["target_directory"]
+                .as_str()
+                .expect("cargo metadata names the target directory"),
+        )
+        .join("debug")
+        .join(format!("cargo-stingy4rust{EXE_SUFFIX}"))
     }
 }
